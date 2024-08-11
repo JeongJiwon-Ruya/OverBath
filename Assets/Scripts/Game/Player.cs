@@ -70,9 +70,7 @@ public class Player : MonoBehaviour
   public void OnDash(InputAction.CallbackContext context)
   {
     if (!context.performed) return;
-    Debug.Log("start dash");
     isDashing = true;
-    Debug.Log(movement);
     DOTween.To(() => rigidbody.velocity, x => rigidbody.velocity = x, movement * movementSpeed, dashDuration).SetEase(Ease.OutCubic).From(movement * dashForce).OnComplete(EndDash);
   }
   private void EndDash()
@@ -86,11 +84,19 @@ public class Player : MonoBehaviour
   public void OnInteraction(InputAction.CallbackContext context)
   {
     if (!context.performed) return;
-    if (!nearObject.gameObject.TryGetComponent<Item>(out var item)) return;
+    if (!nearObject) return;
+    if (nearObject.gameObject.TryGetComponent<Item>(out var item))
+    {
+      foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
+      itemOnHands[(int)item.itemTag].SetActive(true);
+      Destroy(nearObject.gameObject);
+    }
+
+    if (nearObject.gameObject.TryGetComponent<TemperatureControlModule>(out var module))
+    {
+      module.ChangeFacilitiesTemperature();
+    }
     
-    foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
-    itemOnHands[(int)item.itemTag].SetActive(true);
-    Destroy(nearObject.gameObject);
   }
   
   private void OnCollisionStay(Collision other)
