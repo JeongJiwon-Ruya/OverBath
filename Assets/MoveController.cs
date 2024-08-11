@@ -13,6 +13,15 @@ public class MoveController : MonoBehaviour
   [SerializeField] private float movementSpeed = 3.0f;
   private Vector3 movement = new();
 
+  // Dash Parameters
+  [SerializeField] private float dashForce = 10f;  // 대시 시 순간적으로 증가할 속도
+  [SerializeField] private float dashDuration = 0.2f; // 대시 지속 시간
+  [SerializeField] private float dashCooldown = 1f;   // 대시 쿨다운 시간
+  private bool dashDown;
+  private bool isDashing = false;
+  private float lastDashTime = 0f;
+  private float dashEndTime = 0f;
+  
   //Pick Item Parameter
   private bool interactionDown;
   [SerializeField] private GameObject[] itemOnHands;
@@ -30,12 +39,14 @@ public class MoveController : MonoBehaviour
     GetInput();
     UpdateState();
     Interaction();
+    StartDash();
   }
 
   private void GetInput()
   {
     movement.x = Input.GetAxisRaw("Horizontal");
     movement.z = Input.GetAxisRaw("Vertical");
+    dashDown = Input.GetButtonDown("Dash");
     interactionDown = Input.GetButtonDown("Interaction");
   }
 
@@ -53,6 +64,7 @@ public class MoveController : MonoBehaviour
     foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
     itemOnHands[(int)item.itemTag].SetActive(true);
     Destroy(nearObject.gameObject);
+    interactionDown = false;
   }
 
   #region Moving
@@ -77,6 +89,28 @@ public class MoveController : MonoBehaviour
 
   #endregion
 
+  private void StartDash()
+  {
+    if (!dashDown) return;
+    dashDown = false;
+    
+    isDashing = true;
+    lastDashTime = Time.time;
+    dashEndTime = Time.time + dashDuration;
+
+    // 대시 방향으로 강한 힘을 가함
+    rigidbody.AddForce(movement.normalized * dashForce, ForceMode.VelocityChange);
+    // 대시 종료 예약
+    Invoke(nameof(EndDash), dashDuration);
+  }
+
+  private void EndDash()
+  {
+    isDashing = false;
+    rigidbody.velocity = Vector3.zero;  // 대시 후 순간적으로 멈춤
+  }
+  
+  
   private void OnCollisionStay(Collision other)
   {
     if(!other.gameObject.CompareTag("Floor")) nearObject = other.gameObject;
