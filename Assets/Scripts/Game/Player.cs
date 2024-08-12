@@ -85,11 +85,13 @@ public class Player : MonoBehaviour
   {
     if (!context.performed) return;
     if (!nearObject) return;
-    if (nearObject.gameObject.TryGetComponent<Item>(out var item))
+    
+    //tryGetComponent each class
+    if (nearObject.gameObject.TryGetComponent<IWarehouse>(out var warehouse))
     {
+      var item = warehouse.BathItemOut();
       foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
-      itemOnHands[(int)item.itemTag].SetActive(true);
-      Destroy(nearObject.gameObject);
+      itemOnHands[(int)item].SetActive(true);
     }
 
     if (nearObject.gameObject.TryGetComponent<TemperatureControlModule>(out var module))
