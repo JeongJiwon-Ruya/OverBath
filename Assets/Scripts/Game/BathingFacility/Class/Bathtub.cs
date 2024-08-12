@@ -49,6 +49,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   {
     if (BathItemTypes.All(x => x != bathItem.Type))
     {
+      Debug.Log("Item Type Unmatched!");
       return false;
     }
 
