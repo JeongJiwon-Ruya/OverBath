@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBathItemHandler
+
+public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl, IBathItemHandler
 {
   [SerializeField]private int temperature;
   public int Temperature
@@ -17,38 +18,35 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     }
   }
 
-  [SerializeField]private TextMeshPro temperatureText;
-  public TextMeshPro TemperatureText
-  {
-    get => temperatureText;
-    set => temperatureText = value;
-  }
+  [SerializeField] private TextMeshPro temperatureText;
+  public TextMeshPro TemperatureText { get => temperatureText; set => temperatureText = value; }
   
   public BathItemType[] BathItemTypes { get; set; }
   public int BathItemsQueueSize { get; set; }
   public Queue<BathItem> BathItems { get; set; }
-  
+
   private void Start()
   {
     InitializeBathItemFields();
   }
   public void InitializeBathItemFields()
   {
-    BathItemsQueueSize = 1;
-    BathItemTypes = new[] { BathItemType.Water, BathItemType.Aroma };
+    BathItemsQueueSize = 3;
+    BathItemTypes = new[] { BathItemType.BodyWash, BathItemType.Shampoo };
     BathItems = new Queue<BathItem>(BathItemsQueueSize);
   }
-
+  
   public void ChangeTemperature(TemperatureControlSymbol symbol)
   {
     if (symbol == TemperatureControlSymbol.Plus) Temperature++;
     else Temperature--;
   }
-  
+
   public bool TryAddBathItem(BathItem bathItem)
   {
     if (BathItemTypes.All(x => x != bathItem.Type))
     {
+      Debug.Log("Item Type Unmatched!");
       return false;
     }
 
