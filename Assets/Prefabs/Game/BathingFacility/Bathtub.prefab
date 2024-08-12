@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1663092131201741108}
   - component: {fileID: 7672787689919361572}
   - component: {fileID: 4821497226650755094}
-  - component: {fileID: 2016002814839256489}
   - component: {fileID: 8502694961676727997}
+  - component: {fileID: 8407668927248249210}
   m_Layer: 0
   m_Name: Bathtub
   m_TagString: Untagged
@@ -88,8 +88,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2016002814839256489
-CapsuleCollider:
+--- !u!114 &8502694961676727997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688623277056126454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2495b2df3fb5443049ede75988b6d957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  temperature: 36
+  temperatureText: {fileID: 7611754670124177989}
+--- !u!64 &8407668927248249210
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,25 +120,10 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &8502694961676727997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3688623277056126454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2495b2df3fb5443049ede75988b6d957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  temperature: 36
-  temperatureText: {fileID: 7611754670124177989}
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &3839597365593315717
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,16 @@
-public class BathItem
+using UnityEngine;
+
+public enum BathItemType 
 {
-  public BathItemType Type { get; set; }
+  Water, 
+  Aroma, 
+  BodyWash, 
+  Shampoo
+}
+public class BathItem : MonoBehaviour
+{
+  [SerializeField]private BathItemType type;
+  public BathItemType Type { get => type; set => type = value; }
 }
 
 public class BathBomb : BathItem

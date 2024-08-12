@@ -259,6 +259,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2174222699738005092}
   - component: {fileID: 9089916567159824735}
+  - component: {fileID: 3994193513183530879}
+  - component: {fileID: 3736221002570861145}
   m_Layer: 0
   m_Name: F_Asia_Onigiri
   m_TagString: Untagged
@@ -311,3 +313,38 @@ LODGroup:
     renderers:
     - renderer: {fileID: 2231622790369136572}
   m_Enabled: 1
+--- !u!114 &3994193513183530879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734398287278013437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c35797541d06457ca901696808190b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+--- !u!64 &3736221002570861145
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734398287278013437}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 178848378082552549, guid: 9a179958414ddf2419a4078d105cc4b7, type: 3}

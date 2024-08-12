@@ -259,6 +259,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4307256540351634588}
   - component: {fileID: 8787249849206691238}
+  - component: {fileID: 969155425445826311}
+  - component: {fileID: 4751343238878909848}
   m_Layer: 0
   m_Name: F_Europe_Pizza_Pepperoni
   m_TagString: Untagged
@@ -311,3 +313,38 @@ LODGroup:
     renderers:
     - renderer: {fileID: 4984371439150117793}
   m_Enabled: 1
+--- !u!114 &969155425445826311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9134821966003682085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c35797541d06457ca901696808190b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+--- !u!64 &4751343238878909848
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9134821966003682085}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3821130046196189344, guid: e8740c6e008e8384e8778024177a8ec8, type: 3}
