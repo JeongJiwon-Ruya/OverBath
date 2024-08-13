@@ -179,7 +179,10 @@ public class Player : MonoBehaviour
   {
     foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
   }
+  
+  #endregion
 
+  #region ColliderEvent
   private void OnCollisionStay(Collision other)
   {
     if (!other.gameObject.CompareTag("Floor")) nearObject = other.gameObject;
@@ -189,6 +192,5 @@ public class Player : MonoBehaviour
   {
     if (other.gameObject == nearObject) nearObject = null;
   }
-
   #endregion
 }
