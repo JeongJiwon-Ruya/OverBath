@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class Customer : MonoBehaviour
 {
@@ -23,7 +24,17 @@ public class Customer : MonoBehaviour
   public void InitializeFacilityFlow()
   {
     facilityFlow = new Queue<FacilityControlBlock>();
-    facilityFlow.Enqueue(new FacilityControlBlock(){temperature = 40});
+    var ftype = (FacilityType)Random.Range(1, 2);
+    if (ftype == FacilityType.Bathtub)
+    {
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =ftype ,itemTypeList = new List<BathItemType>() { BathItemType.Aroma }, temperature = Random.Range(33, 39)});
+    }
+    else
+    {
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =ftype, itemTypeList = new List<BathItemType> {BathItemType.Shampoo}, temperature = Random.Range(33, 39)});
+    }
+
+    Debug.Log($"Customer : {ftype} & {facilityFlow.Peek().temperature} & {facilityFlow.Peek().itemTypeList[0]}");
   }
 
   public void Move(Vector3 destination)

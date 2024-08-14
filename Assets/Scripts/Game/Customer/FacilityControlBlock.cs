@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FacilityControlBlock
 {
-  public IBathingFacility facilityType;
+  public FacilityType facilityType;
   
   public bool isMoving;
   public bool isUsingNow;
@@ -12,4 +12,5 @@ public class FacilityControlBlock
   
   public int progress;
   public int temperature;
+  public List<BathItemType> itemTypeList;
 }

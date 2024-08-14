@@ -114,7 +114,7 @@ public class Player : MonoBehaviour
     {
       if (nearObject.gameObject.TryGetComponent<IBathItemHandler>(out var itemHandler))
       {
-        if (itemHandler.TryAddBathItem(activeItem.GetComponent<BathItem>()))
+        if (itemHandler.TryAddBathItem(activeItem.GetComponent<BathItem>().Type))
         {
           DeactivateAllItemsOnHands();
         }

@@ -18,33 +18,53 @@ public class CustomerManager : MonoBehaviour
   private void Start()
   {
     customers = new List<Customer>();
+    TestMakeCustomer();
+    TestMakeCustomer();
+  }
+
+  private void TestMakeCustomer()
+  {
     var newCustomer = Instantiate(customerPrefab);
     newCustomer.transform.position = enterArea.transform.position;
     customers.Add(newCustomer.GetComponent<Customer>());
   }
-
+  
   private void OnEnable()
   {
-    GameEventBus.Subscribe(GameEventType.TemperatureChange, CheckFitCustomer);
+    GameEventBus.Subscribe(GameEventType.BathStateChange, CheckFitCustomer_Bathtub);
+    GameEventBus.Subscribe(GameEventType.ShowerBoothTempStateChange, CheckFitCustomer_ShowerBooth);
   }
 
   private void OnDisable()
   {
-    GameEventBus.UnSubscribe(GameEventType.TemperatureChange, CheckFitCustomer);
+    GameEventBus.UnSubscribe(GameEventType.BathStateChange, CheckFitCustomer_Bathtub);
+    GameEventBus.UnSubscribe(GameEventType.ShowerBoothTempStateChange, CheckFitCustomer_ShowerBooth);
   }
 
-  private void CheckFitCustomer(TransportData data)
+  private void CheckFitCustomer_Bathtub(TransportData data)
   {
-    if (data is TemperatureChangeTransportData temperatureChangeTransportData)
+    /*
+     * 온도 체크
+     * 현재 탕 확인(bathitemtype)
+     */
+    if (data is BathStateChangeTransportData temperatureChangeTransportData)
     {
       var pastFittedCustomer = customers.FirstOrDefault(x =>
       {
         if (x.facilityFlow.TryPeek(out var fcb))
         {
-          var pastTemp = temperatureChangeTransportData.symbol == TemperatureControlSymbol.Plus
-              ? temperatureChangeTransportData.temperature - 1
-              : temperatureChangeTransportData.temperature + 1;
-          return fcb.isMoving && fcb.temperature == pastTemp;
+          var pastTemp = temperatureChangeTransportData.symbol switch
+          {
+              TemperatureControlSymbol.Plus => temperatureChangeTransportData.temperature - 1,
+              TemperatureControlSymbol.Minus => temperatureChangeTransportData.temperature + 1,
+              TemperatureControlSymbol.Keep => temperatureChangeTransportData.temperature,
+              _ => 0
+          };
+
+          return fcb.isMoving 
+              && fcb.facilityType == temperatureChangeTransportData.facilityType 
+              && fcb.temperature == pastTemp 
+              && fcb.itemTypeList.FirstOrDefault() == temperatureChangeTransportData.pastBathItemType;
         }
         return false;
       });
@@ -57,7 +77,10 @@ public class CustomerManager : MonoBehaviour
       {
         if (x.facilityFlow.TryPeek(out var fcb))
         {
-          return fcb.isWaiting && fcb.temperature == temperatureChangeTransportData.temperature;
+          return fcb.isWaiting 
+              && fcb.facilityType == temperatureChangeTransportData.facilityType 
+              && fcb.temperature == temperatureChangeTransportData.temperature
+              && fcb.itemTypeList.FirstOrDefault() == temperatureChangeTransportData.bathItemType;
         }
         return false;
         });
@@ -65,6 +88,46 @@ public class CustomerManager : MonoBehaviour
       {
         fitCustomer.Move(temperatureChangeTransportData.facilityPosition);
       }
+    }
+  }
+
+  private void CheckFitCustomer_ShowerBooth(TransportData data)
+  {
+    var pastFittedCustomer = customers.FirstOrDefault(x =>
+    {
+      if (x.facilityFlow.TryPeek(out var fcb))
+      {
+        var pastTemp = data.symbol switch
+        {
+            TemperatureControlSymbol.Plus => data.temperature - 1,
+            TemperatureControlSymbol.Minus => data.temperature + 1,
+            TemperatureControlSymbol.Keep => data.temperature,
+            _ => 0
+        };
+
+        return fcb.isMoving
+            && fcb.facilityType == data.facilityType
+            && fcb.temperature == pastTemp;
+      }
+      return false;
+    });
+    if (pastFittedCustomer != null)
+    {
+      pastFittedCustomer.Stop();
+    }
+    var fitCustomer = customers.FirstOrDefault(x =>
+    {
+      if (x.facilityFlow.TryPeek(out var fcb))
+      {
+        return fcb.isWaiting
+            && fcb.facilityType == data.facilityType
+            && fcb.temperature == data.temperature;
+      }
+      return false;
+    });
+    if (fitCustomer != null)
+    {
+      fitCustomer.Move(data.facilityPosition);
     }
   }
 }
