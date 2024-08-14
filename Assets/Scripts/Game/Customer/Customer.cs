@@ -28,7 +28,22 @@ public class Customer : MonoBehaviour
 
   public void Move(Vector3 destination)
   {
+    if (!facilityFlow.TryPeek(out var fcb)) return;
+    agent.isStopped = false;
+    fcb.isWaiting = false;
+    fcb.isMoving = true;
     animator.SetBool("Move", true);
     agent.SetDestination(destination);
+  }
+  
+  public void Stop()
+  {
+    if (!facilityFlow.TryPeek(out var fcb)) return;
+    agent.isStopped = true;
+    agent.velocity = Vector3.zero;
+    fcb.isMoving = false;
+    fcb.isWaiting = true;
+    Debug.Log("Stop!");
+    animator.SetBool("Move", false);
   }
 }

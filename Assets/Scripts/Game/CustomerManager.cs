@@ -37,8 +37,23 @@ public class CustomerManager : MonoBehaviour
   {
     if (data is TemperatureChangeTransportData temperatureChangeTransportData)
     {
-      // ->
-      var a = customers.FirstOrDefault(x =>
+      var pastFittedCustomer = customers.FirstOrDefault(x =>
+      {
+        if (x.facilityFlow.TryPeek(out var fcb))
+        {
+          var pastTemp = temperatureChangeTransportData.symbol == TemperatureControlSymbol.Plus
+              ? temperatureChangeTransportData.temperature - 1
+              : temperatureChangeTransportData.temperature + 1;
+          return fcb.isMoving && fcb.temperature == pastTemp;
+        }
+        return false;
+      });
+      if (pastFittedCustomer != null)
+      {
+        pastFittedCustomer.Stop();
+      }
+      
+      var fitCustomer = customers.FirstOrDefault(x =>
       {
         if (x.facilityFlow.TryPeek(out var fcb))
         {
@@ -46,9 +61,9 @@ public class CustomerManager : MonoBehaviour
         }
         return false;
         });
-      if (a != null)
+      if (fitCustomer != null)
       {
-        a.Move(temperatureChangeTransportData.facilityPosition);
+        fitCustomer.Move(temperatureChangeTransportData.facilityPosition);
       }
     }
   }

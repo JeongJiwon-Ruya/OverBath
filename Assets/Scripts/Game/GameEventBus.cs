@@ -10,11 +10,13 @@ public class TransportData
 
 public class TemperatureChangeTransportData : TransportData
 {
-  public TemperatureChangeTransportData(Vector3 facilityPosition, int temperature)
+  public TemperatureChangeTransportData(TemperatureControlSymbol symbol, Vector3 facilityPosition, int temperature)
   {
+    this.symbol = symbol;
     this.facilityPosition = facilityPosition;
     this.temperature = temperature;
   }
+  public TemperatureControlSymbol symbol { get; private set; }
   public Vector3 facilityPosition { get; private set; }
   public int temperature { get; private set; }
 }

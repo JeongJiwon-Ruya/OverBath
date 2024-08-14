@@ -40,7 +40,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   {
     if (symbol == TemperatureControlSymbol.Plus) Temperature++;
     else Temperature--;
-    GameEventBus.Publish(GameEventType.TemperatureChange, new TemperatureChangeTransportData(transform.position, Temperature));
+    GameEventBus.Publish(GameEventType.TemperatureChange, new TemperatureChangeTransportData(symbol, transform.position, Temperature));
   }
 
   public bool TryAddBathItem(BathItem bathItem)
