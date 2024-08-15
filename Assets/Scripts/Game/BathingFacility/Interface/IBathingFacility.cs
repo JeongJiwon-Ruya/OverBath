@@ -11,7 +11,9 @@ public enum FacilityType {Bathtub, ShowerBooth}
 
 public interface IBathingFacility
 {
-  public FacilityType facilityType { get; set; }
+  public FacilityType FacilityType { get; set; }
+  public Customer CurrentCustomer { get; set; }
+  public IEnumerator CustomerProgressRoutine { get; set; }
   
-  public Customer currentCustomer { get; set; }
+  public void ReleaseCustomer();
 }
