@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ObservableCollections;
 
 public interface IBathItemHandler
