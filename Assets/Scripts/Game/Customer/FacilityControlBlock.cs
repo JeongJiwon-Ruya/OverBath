@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class FacilityControlBlock
 {
@@ -13,4 +11,9 @@ public class FacilityControlBlock
   public int progress;
   public int temperature;
   public List<BathItemType> itemTypeList;
+
+  public bool IsNextDestinationIsArea()
+  {
+    return facilityType is FacilityType.PaymentArea or FacilityType.HeaterArea or FacilityType.ExitArea;
+  }
 }

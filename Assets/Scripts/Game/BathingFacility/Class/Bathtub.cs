@@ -12,20 +12,18 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   /// 2. 탕의 종류가 일치해야함
   /// </summary>
   
-  /// <summary>
-  /// Unity Event Function==================================
-  /// </summary>
-    #region Event Function
-  private void Start()
+  #region Event Function
+  private void Awake()
   {
     FacilityType = FacilityType.Bathtub;
-    CustomerProgressRoutine = StartCustomerProgressRoutine();
     InitializeBathItemFields();
   }
   private void OnCollisionEnter(Collision other)
   {
     if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
-    if (!customer.facilityFlow.TryPeek(out var fcb)) return;
+    /*if (!customer.facilityFlow.TryPeek(out var fcb)) return;*/
+    if (customer.facilityFlow.Count == 0) return;
+    var fcb = customer.facilityFlow.Peek();
 
     if (fcb.facilityType == FacilityType && fcb.temperature == Temperature)
     {
@@ -33,14 +31,32 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       CurrentCustomer = customer;
     }
   }
-  #endregion
-  /// <summary>
-  /// ==================================Unity Event Function End
-  /// </summary>
   
-  /// <summary>
-  /// IBathingFacility==================================
-  /// </summary>
+  private void OnEnable()
+  {
+    GameEventBus.Subscribe(GameEventType.Request_Bathtub, arg =>
+    {
+      if (!CurrentCustomer && arg.request )
+      {
+        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+      }
+    });
+  }
+
+  private void OnDisable()
+  {
+    GameEventBus.UnSubscribe(GameEventType.Request_Bathtub, arg =>
+    {
+      if (!CurrentCustomer && arg.request)
+      {
+        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+      }
+    });
+  }
+  #endregion
+  
   #region IBathingFacility
   public FacilityType FacilityType { get; set; }
   private Customer currentCustomer;
@@ -55,17 +71,25 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
         StopCoroutine(CustomerProgressRoutine);
       }
 
-      if (value) value.gameObject.SetActive(false);
       currentCustomer = value;
-      StartCoroutine(CustomerProgressRoutine);
+      if (value)
+      {
+        value.gameObject.SetActive(false);
+        CustomerProgressRoutine = StartCoroutine(StartCustomerProgressRoutine());
+      }
+      else
+      {
+        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+      }
     }
   }
-  public IEnumerator CustomerProgressRoutine { get; set; }
+  public Coroutine CustomerProgressRoutine { get; set; }
   
   public IEnumerator StartCustomerProgressRoutine()
   {
     var fcb = CurrentCustomer.facilityFlow.Peek();
-    var a = new WaitForSeconds(0.1f);
+    var a = new WaitForSeconds(0.01f);
 
     while (fcb.progress < 100)
     {
@@ -73,20 +97,18 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       Debug.Log(fcb.progress);
       yield return a;
     }
+    ReleaseCustomer();
   }
   public void ReleaseCustomer()
   {
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
+    
+    GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
+        new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
   }
   #endregion
-  /// <summary>
-  /// ==================================IBathingFacility End
-  /// </summary>
   
-  /// <summary>
-  /// ITemperatureControl==================================
-  /// </summary>
   #region ITemperatureControl
   [SerializeField] private int temperature;
   public int Temperature
@@ -107,31 +129,33 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   }
   public void ChangeTemperature(TemperatureControlSymbol symbol)
   {
-    if (symbol == TemperatureControlSymbol.Plus) Temperature++;
-    else if (symbol == TemperatureControlSymbol.Minus) Temperature--;
-    GameEventBus.Publish(GameEventType.BathStateChange,
-        new BathStateChangeTransportData(FacilityType, symbol, transform.position, Temperature, TryPeekBathItem(),
-            TryPeekBathItem())
-    );
+    if (CurrentCustomer)
+    {
+      //currentCustomer의 스트레스 증가
+      Debug.Log("stress up");
+    }
+    else
+    {
+      if (symbol == TemperatureControlSymbol.Plus) Temperature++;
+      else if (symbol == TemperatureControlSymbol.Minus) Temperature--;
+      GameEventBus.Publish(GameEventType.BathStateChange,
+          new BathStateChangeTransportData(FacilityType, symbol, transform.position, Temperature, TryPeekBathItem(),
+              TryPeekBathItem()));
+    }
   }
   #endregion
-  /// <summary>
-  /// ==================================ITemperatureControl End
-  /// </summary>
   
-  /// <summary>
-  /// IBathItemHandler==================================
-  /// </summary>
   #region IBathItemHandler
   public BathItemType[] BathItemTypes { get; set; }
   public int BathItemsQueueSize { get; set; }
-  public ObservableQueue<BathItemType> BathItems { get; set; }
+  public IObservableCollection<BathItemType> BathItems { get; set; }
   
   public void InitializeBathItemFields()
   {
     BathItemsQueueSize = 1;
     BathItemTypes = new[] { BathItemType.Water, BathItemType.Aroma };
     BathItems = new ObservableQueue<BathItemType>(BathItemsQueueSize);
+    (BathItems as ObservableQueue<BathItemType>)?.Enqueue(BathItemType.Water);
   }
   public bool TryAddBathItem(BathItemType bathItem)
   {
@@ -140,33 +164,36 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       Debug.Log("Item Type Unmatched!");
       return false;
     }
-
-    var pastBathItem = BathItemType.None;
-    if (BathItems.Count == BathItemsQueueSize)
+    
+    if (CurrentCustomer)
     {
-      pastBathItem = BathItems.Dequeue(); // 가장 오래된 항목 제거
-      Debug.Log(pastBathItem + " Out!");
+      //currentcustomer의 stress증가
+      Debug.Log("stress up");
     }
+    else
+    {
+      BathItemType? pastBathItem = BathItemType.None;
+      if (BathItems.Count == BathItemsQueueSize)
+      {
+        pastBathItem = (BathItems as ObservableQueue<BathItemType>)?.Dequeue(); // 가장 오래된 항목 제거
+        Debug.Log(pastBathItem + " Out!");
+      }
 
-    BathItems.Enqueue(bathItem);
-    Debug.Log(bathItem + " In!");
-
-    GameEventBus.Publish(GameEventType.BathStateChange,
-        new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature,
-            bathItem, pastBathItem)
-    );
+      (BathItems as ObservableQueue<BathItemType>)?.Enqueue(bathItem);
+      Debug.Log(bathItem + " In!");
+      GameEventBus.Publish(GameEventType.BathStateChange,
+          new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature,
+              bathItem, pastBathItem));
+    }
 
     return true;
   }
   #endregion
-  /// <summary>
-  /// ==================================IBathItemHandler End
-  /// </summary>
+ 
   
 
-  private BathItemType TryPeekBathItem()
+  private BathItemType? TryPeekBathItem()
   {
-    var result = BathItemType.None;
-    return BathItems.TryPeek(result) ? result : BathItemType.None;
+    return (BathItems as ObservableQueue<BathItemType>)?.Peek();
   }
 }

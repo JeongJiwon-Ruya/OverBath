@@ -1,11 +1,13 @@
 using System.Collections;
+using UnityEngine;
+
 public enum TemperatureControlSymbol
 {
   Plus,
   Minus,
   Keep
 }
-public enum FacilityType {Bathtub, ShowerBooth}
+public enum FacilityType {Bathtub, ShowerBooth, PaymentArea, HeaterArea, ExitArea}
 
 public interface IBathingFacility
 {
@@ -39,7 +41,7 @@ public interface IBathingFacility
   
   public FacilityType FacilityType { get; set; }
   public Customer CurrentCustomer { get; set; }
-  public IEnumerator CustomerProgressRoutine { get; set; }
+  public Coroutine CustomerProgressRoutine { get; set; }
 
   public IEnumerator StartCustomerProgressRoutine();
   public void ReleaseCustomer();
