@@ -68,7 +68,6 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   }
   #endregion
   
-  
   #region IBathingFacility
   public FacilityType FacilityType { get; set; }
   

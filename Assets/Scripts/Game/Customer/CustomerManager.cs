@@ -12,13 +12,13 @@ public class CustomerManager : MonoBehaviour
   /// 손님 우선순위에 따라 관리해야 하기 때문에 별도의 자료구조에 저장 필요.
   /// </summary>
   public List<Customer> customers;
-
-  private Subject<Customer> customerDestroyedSubject = new Subject<Customer>();
   
   public GameObject customerPrefab;
 
   [SerializeField] private GameObject enterArea;
 
+
+  #region EventFunction
   private void Awake()
   {
     customers = new List<Customer>();
@@ -29,22 +29,7 @@ public class CustomerManager : MonoBehaviour
     TestMakeCustomer(1);
     TestMakeCustomer(2);
   }
-
-  private void TestMakeCustomer(int name)
-  {
-    var newCustomer = Instantiate(customerPrefab);
-    var customer = newCustomer.GetComponent<Customer>();
-    /*if (!customers.Contains(customer))
-    {
-      customers.Add(customer);
-      customer.OnDestroyedAsObservable()
-          .Subscribe(_ => customerDestroyedSubject.OnNext(customer))
-          .AddTo(this);
-    }*/
-    newCustomer.name =name.ToString();
-    newCustomer.transform.position = enterArea.transform.position;
-    customers.Add(newCustomer.GetComponent<Customer>());
-  }
+  
   
   private void OnEnable()
   {
@@ -59,7 +44,8 @@ public class CustomerManager : MonoBehaviour
     GameEventBus.UnSubscribe(GameEventType.BathStateChange, CheckFitCustomer_Bathtub);
     GameEventBus.UnSubscribe(GameEventType.ShowerBoothTempStateChange, CheckFitCustomer_ShowerBooth);
   }
-
+  #endregion
+  
   private void CheckFitCustomer_Area(AreaInfoTransportData data)
   {
     
@@ -172,5 +158,14 @@ public class CustomerManager : MonoBehaviour
       if(!fitCustomer.gameObject.activeSelf) fitCustomer.gameObject.SetActive(true);
       fitCustomer.Move(data.facilityPosition);
     }
+  }
+  
+  
+  private void TestMakeCustomer(int name)
+  {
+    var newCustomer = Instantiate(customerPrefab);
+    newCustomer.name =name.ToString();
+    newCustomer.transform.position = enterArea.transform.position;
+    customers.Add(newCustomer.GetComponent<Customer>());
   }
 }

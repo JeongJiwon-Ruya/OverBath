@@ -189,9 +189,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     return true;
   }
   #endregion
- 
   
-
   private BathItemType? TryPeekBathItem()
   {
     return (BathItems as ObservableQueue<BathItemType>)?.Peek();

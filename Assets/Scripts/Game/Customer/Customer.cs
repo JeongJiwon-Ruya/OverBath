@@ -11,7 +11,7 @@ using R3;
 public class Customer : MonoBehaviour
 {
   public int stress;
-  public int moisture;
+  public int moisture = 100;
   public ObservableQueue<FacilityControlBlock> facilityFlow;
   public Animator animator;
 
@@ -38,6 +38,7 @@ public class Customer : MonoBehaviour
     {
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>() { BathItemType.Water }, temperature = Random.Range(37,38)});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { BathItemType.Shampoo }, temperature = Random.Range(36,37)});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.ExitArea});
     }
@@ -97,6 +98,20 @@ public class Customer : MonoBehaviour
     animator.SetBool("Move", true);
     agent.SetDestination(destination);
     await UniTask.WaitUntil(() => transform.position.IsNear(destination, epsilon), cancellationToken: this.GetCancellationTokenOnDestroy());
+    if(!agent.isStopped) Stop();
+  }
+  
+  public async UniTask Move(Vector3 destination, float duration)
+  {
+    if (facilityFlow.Count == 0) return;
+    var fcb = facilityFlow.Peek();
+    agent.isStopped = false;
+    fcb.isWaiting = false;
+    fcb.isMoving = true;
+    animator.SetBool("Move", true);
+    agent.SetDestination(destination);
+    //await UniTask.WaitUntil(() => transform.position.IsNear(destination, epsilon), cancellationToken: this.GetCancellationTokenOnDestroy());
+    await UniTask.WaitForSeconds(duration);
     if(!agent.isStopped) Stop();
   }
   

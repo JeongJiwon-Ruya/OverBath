@@ -55,7 +55,7 @@ public class ExitArea : MonoBehaviour, ICustomerArea
     customer.Die();
   }
 
-  public void RemoveCustomer()
+  public void RemoveCustomer(Customer customer = null)
   {
     throw new System.NotImplementedException();
   }
