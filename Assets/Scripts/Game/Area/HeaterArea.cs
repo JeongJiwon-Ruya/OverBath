@@ -90,7 +90,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
 
   public void PlaceNewCustomer(Customer customer)
   {
-    _ = customer.Move(GetRandomPosition(), 1f);
+    _ = customer.Move_Waiting(GetRandomPosition());
   }
 
   public void ReleaseAndReplaceCustomer(Customer releasedCustomer)
@@ -110,7 +110,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
     while (customer.moisture > 0)
     {
         customer.moisture--;
-        Debug.Log(customer.moisture);
+        //Debug.Log(customer.moisture);
       yield return new WaitForSeconds(0.05f);
     }
     customer.facilityFlow.Peek().isUsingNow = false;

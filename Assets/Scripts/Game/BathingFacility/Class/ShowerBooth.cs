@@ -107,6 +107,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
       yield return new WaitForSeconds(0.05f);
     }
 
+    progressText.text = "";
     fcb.isUsingNow = false;
     ReleaseCustomer();
   }

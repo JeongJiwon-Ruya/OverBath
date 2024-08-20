@@ -40,8 +40,8 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     {
       if (!CurrentCustomer && arg.request )
       {
-        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+        GameEventBus.Publish(GameEventType.BathStateChange,
+            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
       }
     });
   }
@@ -52,8 +52,8 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     {
       if (!CurrentCustomer && arg.request)
       {
-        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+        GameEventBus.Publish(GameEventType.BathStateChange,
+            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
       }
     });
   }
@@ -99,6 +99,8 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       progressText.text = fcb.progress.ToString();
       yield return a;
     }
+
+    progressText.text = "";
     ReleaseCustomer();
   }
   public void ReleaseCustomer()

@@ -84,7 +84,7 @@ public class CustomerManager : MonoBehaviour
     if (fitCustomer != null)
     {
       if(!fitCustomer.gameObject.activeSelf) fitCustomer.gameObject.SetActive(true);
-      fitCustomer.Move(data.position);
+      _ = fitCustomer.Move_Area(data.position);
     }
   }
   
@@ -135,7 +135,7 @@ public class CustomerManager : MonoBehaviour
       });
     if (fitCustomer != null)
     {
-      fitCustomer.Move(data.facilityPosition);
+      _ = fitCustomer.Move_Facility(data.facilityPosition);
     }
   }
 
@@ -180,7 +180,7 @@ public class CustomerManager : MonoBehaviour
     if (fitCustomer != null)
     {
       if(!fitCustomer.gameObject.activeSelf) fitCustomer.gameObject.SetActive(true);
-      fitCustomer.Move(data.facilityPosition);
+      _ = fitCustomer.Move_Facility(data.facilityPosition);
     }
   }
   

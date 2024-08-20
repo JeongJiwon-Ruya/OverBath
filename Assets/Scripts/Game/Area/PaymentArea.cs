@@ -128,7 +128,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
   {
     while (isPlayerIn)
     {
-      if(customers.Count != 0 && customers.First().transform.position.IsNear(customersSeat[0].position, 1f)) RemoveCustomer();
+      if(customers.Count != 0 && customers.First().transform.position.IsNear(customersSeat[0].position)) RemoveCustomer();
       yield return new WaitForSeconds(1f);
     }
   } 
