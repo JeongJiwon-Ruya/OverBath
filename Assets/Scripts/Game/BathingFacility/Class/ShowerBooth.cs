@@ -103,8 +103,8 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
     while (fcb.progress < 100)
     {
       fcb.progress++;
-      Debug.Log(fcb.progress);
-      yield return new WaitForSeconds(0.02f);
+      progressText.text = fcb.progress.ToString();
+      yield return new WaitForSeconds(0.05f);
     }
 
     fcb.isUsingNow = false;
@@ -166,6 +166,15 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
     BathItemsQueueSize = 3;
     BathItemTypes = new[] { BathItemType.BodyWash, BathItemType.Shampoo };
     BathItems = new ObservableList<BathItemType>(BathItemsQueueSize);
+
+    BathItems.ObserveCountChanged().Subscribe(_ =>
+    {
+      bathItemText.text = "";
+      foreach (var VARIABLE in BathItems)
+      {
+        bathItemText.text += $"\n{VARIABLE}";
+      }
+    });
     BathItems.ObserveAdd().Subscribe(_ =>
     {
       CheckBathItemIsFitCurrentCustomer();
@@ -196,6 +205,9 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   
 
   #endregion
+
+  [SerializeField] private TextMeshPro bathItemText;
+  [SerializeField] private TextMeshPro progressText;
   
   private void CheckBathItemIsFitCurrentCustomer()
   {

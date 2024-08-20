@@ -24,7 +24,6 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
     customers = new ObservableQueue<Customer>();
     customers.ObserveAdd().Subscribe(newCustomer =>
     {
-      //newCustomerRoutine = StartCoroutine(PlaceNewCustomer(newCustomer.Value));
       PlaceNewCustomer(newCustomer.Value);
     });
     customers.ObserveRemove().Subscribe(replaceCustomer =>
@@ -109,7 +108,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
     //추가된 후 호출
     //제일 뒤에 배치해야함.
     customer.facilityFlow.Peek().isUsingNow = true;
-    _ = customer.Move(customersSeat[customers.Count - 1].position);
+    _ = customer.Move_Waiting(customersSeat[customers.Count - 1].position);
     /*yield return new WaitForSeconds(1f);
     customer.Stop();*/
   }
@@ -118,7 +117,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
     var index = 0;
     foreach (var customer in customers)
     {
-      _ = customer.Move(customersSeat[index].position);
+      _ = customer.Move_Waiting(customersSeat[index].position);
       index++;
     }
   }

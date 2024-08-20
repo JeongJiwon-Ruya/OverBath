@@ -3,19 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using R3;
 using TMPro;
 using UnityEngine;
 
 public class GameManger : MonoBehaviour
 {
   [SerializeField]private CustomerManager customerManager;
-  public RectTransform customerInfoScrollView;
-  public GameObject customerInfoUIPrefab;
+  [SerializeField]private RectTransform customerInfoScrollView;
+  [SerializeField]private GameObject customerInfoUIPrefab;
   private Dictionary<Customer, GameObject> customerInfoUIDictionary;
+
+  [SerializeField] private TextMeshProUGUI timerText;
 
   private void Awake()
   {
     customerInfoUIDictionary = new Dictionary<Customer, GameObject>();
+  }
+
+  private void Start()
+  {
+    StartCoroutine(MainTimer());
+  }
+
+  private IEnumerator MainTimer()
+  {
+    int timeLimit = 30;
+    int currentTime = timeLimit;
+    while (currentTime > 0)
+    {
+      currentTime--;
+      timerText.text = currentTime.ToString();
+      yield return new WaitForSeconds(1f);
+    }
+
   }
 
   public void MakeCustomerInfoUI(Customer customer)

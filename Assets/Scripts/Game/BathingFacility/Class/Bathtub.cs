@@ -3,6 +3,8 @@ using System.Linq;
 using ObservableCollections;
 using TMPro;
 using UnityEngine;
+using R3;
+using UnityEngine.Serialization;
 
 public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBathItemHandler
 {
@@ -94,7 +96,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     while (fcb.progress < 100)
     {
       fcb.progress++;
-      Debug.Log(fcb.progress);
+      progressText.text = fcb.progress.ToString();
       yield return a;
     }
     ReleaseCustomer();
@@ -155,6 +157,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     BathItemsQueueSize = 1;
     BathItemTypes = new[] { BathItemType.Water, BathItemType.Aroma };
     BathItems = new ObservableQueue<BathItemType>(BathItemsQueueSize);
+    BathItems.ObserveCountChanged().Subscribe(x => bathItemText.text = BathItems.First().ToString());
     (BathItems as ObservableQueue<BathItemType>)?.Enqueue(BathItemType.Water);
   }
   public bool TryAddBathItem(BathItemType bathItem)
@@ -189,6 +192,9 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     return true;
   }
   #endregion
+
+  [SerializeField] private TextMeshPro bathItemText;
+  [SerializeField] private TextMeshPro progressText;
   
   private BathItemType? TryPeekBathItem()
   {

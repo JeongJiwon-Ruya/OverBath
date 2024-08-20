@@ -1579,8 +1579,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stress: 0
   moisture: 100
-  animator: {fileID: 0}
-  agent: {fileID: 0}
+  animator: {fileID: 8288591592989146627}
+  agent: {fileID: 5853702511914078487}
 --- !u!195 &5853702511914078487
 NavMeshAgent:
   m_ObjectHideFlags: 0

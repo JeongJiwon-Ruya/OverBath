@@ -77,11 +77,11 @@ public class Customer : MonoBehaviour
     }
   }
 
-  private float epsilon = 1.1f;
+  private float epsilon = 0.5f;
   
   public async UniTask Move(Vector3 destination)
   {
-    Debug.Log(destination + " destination");
+    Debug.Log("move to "+destination);
     if (facilityFlow.Count == 0) return;
     var fcb = facilityFlow.Peek();
     agent.isStopped = false;
@@ -102,21 +102,27 @@ public class Customer : MonoBehaviour
     fcb.isMoving = true;
     animator.SetBool("Move", true);
     agent.SetDestination(destination);
-    //await UniTask.WaitUntil(() => transform.position.IsNear(destination, epsilon), cancellationToken: this.GetCancellationTokenOnDestroy());
     await UniTask.WaitForSeconds(duration);
     if(!agent.isStopped) Stop();
+  }
+
+  public async UniTask Move_Waiting(Vector3 destination)
+  {
+    agent.isStopped = false;
+    animator.SetBool("Move", true);
+    agent.SetDestination(destination);
   }
   
   public void Stop()
   {
     if (facilityFlow.Count == 0) return;
+    Debug.Log("Stop!");
     var fcb = facilityFlow.Peek();
     /*if (!facilityFlow.TryPeek(out var fcb)) return;*/
     agent.isStopped = true;
     agent.velocity = Vector3.zero;
     fcb.isMoving = false;
     fcb.isWaiting = true;
-    Debug.Log("Stop!");
     animator.SetBool("Move", false);
   }
 
