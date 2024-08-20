@@ -33,22 +33,13 @@ public class Customer : MonoBehaviour
       FindNextDestination();
     });
     
-    //TestCode
-    /*if (gameObject.name.Contains("1"))*/
     {
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>() { BathItemType.Water }, temperature = Random.Range(37,38)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { BathItemType.Shampoo }, temperature = Random.Range(36,37)});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(0,2) }, temperature = Random.Range(33,40)});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.ExitArea});
     }
-    /*else
-    {
-      //facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>() { BathItemType.Water }, temperature = Random.Range(38,39)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth, itemTypeList = new List<BathItemType> {BathItemType.Shampoo}, temperature = Random.Range(36, 37)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.ExitArea});
-    }*/
     PublishRequestEventToFacility();
   }
 
@@ -86,10 +77,11 @@ public class Customer : MonoBehaviour
     }
   }
 
-  private float epsilon = 0.01f;
+  private float epsilon = 1.1f;
   
   public async UniTask Move(Vector3 destination)
   {
+    Debug.Log(destination + " destination");
     if (facilityFlow.Count == 0) return;
     var fcb = facilityFlow.Peek();
     agent.isStopped = false;

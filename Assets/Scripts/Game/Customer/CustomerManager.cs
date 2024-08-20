@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ObservableCollections;
 using R3;
 using UnityEngine;
 
@@ -11,7 +12,9 @@ public class CustomerManager : MonoBehaviour
   /// customer들은 GameManager 또는 다른 Generate 클래스에서 생성하여 참조 유지.
   /// 손님 우선순위에 따라 관리해야 하기 때문에 별도의 자료구조에 저장 필요.
   /// </summary>
-  public List<Customer> customers;
+  [SerializeField]private GameManger gameManger;
+  
+  public ObservableList<Customer> customers;
   
   public GameObject customerPrefab;
 
@@ -21,13 +24,34 @@ public class CustomerManager : MonoBehaviour
   #region EventFunction
   private void Awake()
   {
-    customers = new List<Customer>();
+    customers = new ObservableList<Customer>();
+    customers.ObserveAdd().Subscribe(addEvent =>
+    {
+      addEvent.Value.facilityFlow.ObserveRemove().Subscribe(removeEvent =>
+      {
+        if (removeEvent.Value.facilityType == FacilityType.ExitArea)
+        {
+          Debug.Log("EXIT CUSTOMER");
+          Debug.Log(addEvent.Value.name);
+          customers.Remove(addEvent.Value);
+        }
+        else
+        {
+          gameManger.UpdateCustomerInfoUI(addEvent.Value);
+        }
+      });
+    });
+    customers.ObserveRemove().Subscribe(removeEvent =>
+    {
+      gameManger.RemoveCustomerInfoUI(removeEvent.Value);
+      MakeCustomer();
+    });
   }
 
   private void Start()
   {
-    TestMakeCustomer(1);
-    TestMakeCustomer(2);
+    MakeCustomer();
+    MakeCustomer();
   }
   
   
@@ -167,5 +191,14 @@ public class CustomerManager : MonoBehaviour
     newCustomer.name =name.ToString();
     newCustomer.transform.position = enterArea.transform.position;
     customers.Add(newCustomer.GetComponent<Customer>());
+  }
+
+  public void MakeCustomer()
+  {
+    var newCustomer = Instantiate(customerPrefab);
+    newCustomer.transform.position = enterArea.transform.position;
+    var component = newCustomer.GetComponent<Customer>();
+    customers.Add(component);
+    gameManger.MakeCustomerInfoUI(component);
   }
 }

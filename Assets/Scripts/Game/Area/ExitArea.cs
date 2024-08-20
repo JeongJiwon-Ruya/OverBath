@@ -52,6 +52,7 @@ public class ExitArea : MonoBehaviour, ICustomerArea
 
   public void AddCustomer(Customer customer)
   {
+    customer.facilityFlow.Dequeue();
     customer.Die();
   }
 
