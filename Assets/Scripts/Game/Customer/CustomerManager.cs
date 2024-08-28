@@ -51,7 +51,7 @@ public class CustomerManager : MonoBehaviour
   private void Start()
   {
     MakeCustomer();
-    MakeCustomer();
+    //MakeCustomer();
   }
   
   

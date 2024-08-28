@@ -1784,7 +1784,7 @@ Animator:
   m_GameObject: {fileID: 4313373547859852518}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1feeafed0a6582a43a38139d65c828ae, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5e2bfa22926a04d73ab26b3edd8e4df4, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1807,18 +1807,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30cbf9e60eae84c07a826266dd0fc6b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 8
+  movementSpeed: 3
   dashForce: 30
   dashDuration: 0.5
   dashCooldown: 1
   dashDown: 0
   itemOnHands:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1886036950528032085}
+  - {fileID: 506522995640431446}
+  - {fileID: 704541146694842711}
+  - {fileID: 6602435350728901150}
   equipmentsOnHands:
-  - {fileID: 0}
+  - {fileID: 7832231704084994934}
   nearObject: {fileID: 0}
   dropDistance: 1
 --- !u!54 &9188836438224945142
@@ -1920,7 +1920,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 6571631524120154617}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: OnMove
         m_Mode: 0
@@ -1936,7 +1936,7 @@ MonoBehaviour:
     m_ActionName: PlayerActions/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 6571631524120154617}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: OnInteraction
         m_Mode: 0
@@ -1952,7 +1952,7 @@ MonoBehaviour:
     m_ActionName: PlayerActions/Interaction[/Keyboard/e]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 6571631524120154617}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: OnDash
         m_Mode: 0
@@ -3789,6 +3789,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7187c3f4e6f817f4f8084642519c9d3e, type: 3}
+--- !u!1 &1886036950528032085 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4734398287278013437, guid: 7187c3f4e6f817f4f8084642519c9d3e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6602130499493660328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5022391763855145164 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2174222699738005092, guid: 7187c3f4e6f817f4f8084642519c9d3e,
@@ -4041,6 +4047,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62ed7ab4a04e8ea4d8591655bb97ba92, type: 3}
+--- !u!1 &506522995640431446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9134821966003682085, guid: 62ed7ab4a04e8ea4d8591655bb97ba92,
+    type: 3}
+  m_PrefabInstance: {fileID: 8773838722641905779}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4757099548130694383 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4307256540351634588, guid: 62ed7ab4a04e8ea4d8591655bb97ba92,
