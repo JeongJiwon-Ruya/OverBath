@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
@@ -22,8 +23,10 @@ public class Player : MonoBehaviour
 
   //Interaction Parameter
   [SerializeField] private GameObject[] itemOnHands;
+  [SerializeField] private GameObject[] equipmentsOnHands;
   [SerializeField] private GameObject nearObject;
 
+  
   //String Hash Parameter
   private static readonly int IsMove = Animator.StringToHash("isMove");
   private static readonly int XDir = Animator.StringToHash("xDir");
@@ -103,6 +106,12 @@ public class Player : MonoBehaviour
       return;
     }
 
+    if (equipmentsOnHands.Any(x => x.activeSelf))
+    {
+      HandleEquipmentOnHands();
+      return;
+    }
+    
     if (nearObject) HandleNearObject();
   }
 
@@ -126,6 +135,29 @@ public class Player : MonoBehaviour
       DeactivateAllItemsOnHands();
     }
   }
+  
+  private void HandleEquipmentOnHands()
+  {
+    var activeItem = equipmentsOnHands.First(x => x.activeSelf);
+
+    if (nearObject)
+    {
+      if (nearObject.gameObject.TryGetComponent<IPlayerDocking>(out var itemHandler))
+      {
+        if (itemHandler.TrySetPlayer(this))
+        {
+          /*
+           * 시설에 도킹
+           */
+        }
+      }
+    }
+    else
+    {
+      DropItem(activeItem);
+      DeactivateAllEquipmentsOnHands();
+    }
+  }
 
   private void HandleNearObject()
   {
@@ -145,6 +177,11 @@ public class Player : MonoBehaviour
     {
       HandleBathItemInteraction(bathItem);
     }
+
+    if (nearObject.gameObject.TryGetComponent<PlayerEquipment>(out var equipment))
+    {
+      HandlePlayerEquipmentInteraction(equipment);
+    } 
   }
 
   private void HandleWarehouseInteraction(IWarehouse warehouse)
@@ -159,6 +196,14 @@ public class Player : MonoBehaviour
     DeactivateAllItemsOnHands();
     Destroy(bathItem.gameObject);
     itemOnHands[(int)bathItem.Type].SetActive(true);
+  }
+
+  private void HandlePlayerEquipmentInteraction(PlayerEquipment equipment)
+  {
+    DeactivateAllEquipmentsOnHands();
+    Destroy(equipment.gameObject);
+    equipmentsOnHands[(int)equipment.Type].SetActive(true);
+    
   }
 
   private void DropItem(GameObject item)
@@ -179,18 +224,24 @@ public class Player : MonoBehaviour
   {
     foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);
   }
+  private void DeactivateAllEquipmentsOnHands()
+  {
+    foreach (var equipmentOnHand in equipmentsOnHands) equipmentOnHand.SetActive(false);
+  }
   
   #endregion
 
   #region ColliderEvent
-  private void OnCollisionStay(Collision other)
+
+  private void OnTriggerStay(Collider other)
   {
-    if (!other.gameObject.CompareTag("Floor")) nearObject = other.gameObject;
+    if (!other.CompareTag("Floor")) nearObject = other.gameObject;
   }
 
-  private void OnCollisionExit(Collision other)
+  private void OnTriggerExit(Collider other)
   {
     if (other.gameObject == nearObject) nearObject = null;
   }
+
   #endregion
 }

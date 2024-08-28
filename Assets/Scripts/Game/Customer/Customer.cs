@@ -59,6 +59,7 @@ public class Customer : MonoBehaviour
     });
     
     {
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
           {
               (BathItemType)Random.Range(0,2)
@@ -89,9 +90,11 @@ public class Customer : MonoBehaviour
   
   private void PublishRequestEventToFacility()
   {
-    if (facilityFlow.Count == 0) return;
-    var fcb = facilityFlow.Peek();
-    Debug.Log($"Customer : {fcb.facilityType} & {fcb.temperature} & {fcb.itemTypeList[0]}");
+    if (!facilityFlow.TryPeek(out var fcb)) return;
+    if(fcb.itemTypeList != null)
+      Debug.Log($"Customer : {fcb.facilityType} & {fcb.temperature} & {fcb.itemTypeList[0]}");
+    else 
+      Debug.Log($"Customer : {fcb.facilityType} & {fcb.temperature} & {fcb.equipmentType}");
     switch (fcb.facilityType)
     {
       case FacilityType.Bathtub:
@@ -99,6 +102,9 @@ public class Customer : MonoBehaviour
         break;
       case FacilityType.ShowerBooth:
         GameEventBus.Publish(GameEventType.Request_ShowerBooth, new RequestTransportData(fcb.facilityType));
+        break;
+      case FacilityType.Massage:
+        GameEventBus.Publish(GameEventType.Request_Area, new RequestTransportData(fcb.facilityType));
         break;
       default:
         throw new ArgumentOutOfRangeException();

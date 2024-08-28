@@ -16,7 +16,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
 
   private void Awake()
   {
-    facilityType = FacilityType.HeaterArea;
+    FacilityType = FacilityType.HeaterArea;
     customers = new ObservableList<Customer>();
     customers.ObserveAdd().Subscribe(x =>
     {
@@ -36,7 +36,8 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
   {
     if (other.TryGetComponent<Customer>(out var customer))
     {
-      AddCustomer(customer);
+      if(customer.facilityFlow.Peek().facilityType == FacilityType)
+        AddCustomer(customer);
     }
   }
 
@@ -56,7 +57,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
       if (arg0 is { facilityType: FacilityType.HeaterArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -68,7 +69,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
       if (arg0 is { facilityType: FacilityType.HeaterArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -76,7 +77,7 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
   #endregion
   
   #region ICustomerArea
-  public FacilityType facilityType { get; set; }
+  public FacilityType FacilityType { get; set; }
   public IObservableCollection<Customer> customers { get; set; }
   public void AddCustomer(Customer customer)
   {

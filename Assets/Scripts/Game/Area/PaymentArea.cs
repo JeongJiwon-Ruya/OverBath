@@ -5,7 +5,7 @@ using ObservableCollections;
 using UnityEngine;
 using R3;
 
-public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
+public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
 {
   /// <summary>
   /// 1. 손님 온 순서대로 줄세우기
@@ -20,7 +20,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
 
   private void Awake()
   {
-    facilityType = FacilityType.PaymentArea;
+    FacilityType = FacilityType.PaymentArea;
     customers = new ObservableQueue<Customer>();
     customers.ObserveAdd().Subscribe(newCustomer =>
     {
@@ -44,7 +44,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
       if (arg0 is { facilityType: FacilityType.PaymentArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -56,7 +56,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
       if (arg0 is { facilityType: FacilityType.PaymentArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -67,6 +67,8 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
   #region IPlayerArea
 
   [SerializeField] private bool isPlayerIn;
+  public Player CurrentPlayer { get; set; }
+
   public bool IsPlayerIn
   {
     get => isPlayerIn;
@@ -89,7 +91,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerArea
   //ICustomerArea
   #region ICustomerArea
 
-  public FacilityType facilityType { get; set; }
+  public FacilityType FacilityType { get; set; }
   public IObservableCollection<Customer> customers { get; set; }
   public void AddCustomer(Customer customer)
   {

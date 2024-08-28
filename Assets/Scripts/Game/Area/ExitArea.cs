@@ -9,7 +9,7 @@ public class ExitArea : MonoBehaviour, ICustomerArea
   // Start is called before the first frame update
   private void Awake()
   {
-    facilityType = FacilityType.ExitArea;
+    FacilityType = FacilityType.ExitArea;
     customers = new ObservableQueue<Customer>();
   }
 
@@ -20,7 +20,7 @@ public class ExitArea : MonoBehaviour, ICustomerArea
       if (arg0 is { facilityType: FacilityType.ExitArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -32,7 +32,7 @@ public class ExitArea : MonoBehaviour, ICustomerArea
       if (arg0 is { facilityType: FacilityType.ExitArea, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(facilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
     });
   }
@@ -41,13 +41,13 @@ public class ExitArea : MonoBehaviour, ICustomerArea
   {
     if (other.TryGetComponent<Customer>(out var customer))
     {
-      if(customer.facilityFlow.Peek().facilityType == facilityType)
+      if(customer.facilityFlow.Peek().facilityType == FacilityType)
         AddCustomer(customer);
     }
   }
 
   #region ICustomerArea
-  public FacilityType facilityType { get; set; }
+  public FacilityType FacilityType { get; set; }
   public IObservableCollection<Customer> customers { get; set; }
 
   public void AddCustomer(Customer customer)

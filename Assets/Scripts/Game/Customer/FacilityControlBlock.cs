@@ -3,6 +3,7 @@ using System.Collections.Generic;
 public class FacilityControlBlock
 {
   public FacilityType facilityType;
+  public EquipmentType equipmentType;
   
   public bool isMoving;
   public bool isUsingNow;

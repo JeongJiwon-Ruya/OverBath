@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerSubArea : MonoBehaviour
 {
-  [SerializeField] private IPlayerArea parentArea;
+  [SerializeField] private IPlayerInteractionArea parentArea;
 
   private void Awake()
   {
-    parentArea = GetComponentInParent<IPlayerArea>();
+    parentArea = GetComponentInParent<IPlayerInteractionArea>();
   }
 
   private void OnTriggerEnter(Collider other)

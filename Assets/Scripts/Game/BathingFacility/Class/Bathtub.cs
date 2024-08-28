@@ -23,9 +23,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   private void OnCollisionEnter(Collision other)
   {
     if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
-    /*if (!customer.facilityFlow.TryPeek(out var fcb)) return;*/
-    if (customer.facilityFlow.Count == 0) return;
-    var fcb = customer.facilityFlow.Peek();
+    if (!customer.facilityFlow.TryPeek(out var fcb)) return;
 
     if (fcb.facilityType == FacilityType && fcb.temperature == Temperature)
     {

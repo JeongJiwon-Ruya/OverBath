@@ -18,7 +18,7 @@ public class CustomerSubArea : MonoBehaviour
     if (collider.TryGetComponent<Customer>(out var customer))
     {
       Debug.Log("Enter Customer");
-      if(customer.facilityFlow.Peek().facilityType == parentArea.facilityType)
+      if(customer.facilityFlow.Peek().facilityType == parentArea.FacilityType)
         parentArea.AddCustomer(customer);
     }
   }

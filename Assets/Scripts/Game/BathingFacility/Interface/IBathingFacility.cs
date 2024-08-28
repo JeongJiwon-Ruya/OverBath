@@ -7,7 +7,7 @@ public enum TemperatureControlSymbol
   Minus,
   Keep
 }
-public enum FacilityType {Bathtub, ShowerBooth, PaymentArea, HeaterArea, ExitArea}
+public enum FacilityType {Bathtub, ShowerBooth, Massage, PaymentArea, HeaterArea, ExitArea}
 
 public interface IBathingFacility
 {
