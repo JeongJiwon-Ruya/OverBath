@@ -62,8 +62,8 @@ public class Customer : MonoBehaviour
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
           {
-              (BathItemType)Random.Range(0,2)
-          }, temperature = Random.Range(33,39)});
+              (BathItemType)Random.Range(0,1)
+          }, temperature = Random.Range(36,37)});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
@@ -121,14 +121,14 @@ public class Customer : MonoBehaviour
     fcb.isMoving = true;
     animator.SetBool("Move", true);
     agent.SetDestination(new Vector3(destination.x, transform.position.y, destination.z));
-    await UniTask.WaitUntil(() => agent.remainingDistance < 0.2f, cancellationToken: moveCancellationSource.Token);
+    await UniTask.WaitUntil(() => agent.remainingDistance < 0.1f, cancellationToken: moveCancellationSource.Token);
     if(!agent.isStopped) Stop();
   }
   public async UniTask Move_Facility(Vector3 destination)
   {
     Debug.Log("move to "+destination);
-    if (facilityFlow.Count == 0) return;
-    var fcb = facilityFlow.Peek();
+    if (!facilityFlow.TryPeek(out var fcb)) return;
+    await UniTask.WaitUntil(() => gameObject.activeSelf);
     agent.isStopped = false;
     fcb.isWaiting = false;
     fcb.isMoving = true;

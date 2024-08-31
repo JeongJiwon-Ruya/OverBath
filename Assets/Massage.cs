@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ObservableCollections;
+using TMPro;
 using UnityEngine;
 
 public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
@@ -75,9 +76,16 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
     } 
     set
     {
+      var tempCustomer = currentCustomer;
       currentCustomer = value;
-      if (value)
+      if (!value)
       {
+        tempCustomer.gameObject.SetActive(true);
+      }
+      else
+      {
+        if (currentCustomer.facilityFlow.TryPeek(out var fcb)) currentCustomerFCB = fcb;
+        currentCustomer.gameObject.SetActive(false);
         if (CheckReadyToProgress())
         {
           CustomerProgressRoutine = StartCoroutine(StartCustomerProgressRoutine());
@@ -94,12 +102,16 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
      * 때밀이 액션
      */
     Debug.Log("Start Routine!");
-    yield return null;
+    yield return new WaitUntil(() => currentCustomerFCB.progress >= 100);
+    ReleaseCustomer();
   }
 
   public void ReleaseCustomer()
   {
-    throw new System.NotImplementedException();
+    CurrentCustomer.facilityFlow.Dequeue();
+    CurrentCustomer = null;
+    CurrentPlayer = null;
+    //player가 꺼지면 input 못받음
   }
 
   #endregion
@@ -113,6 +125,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
     get => currentPlayer;
     set
     {
+      var tempPlayer = currentPlayer;
       currentPlayer = value;
       if (value)
       {
@@ -121,28 +134,54 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
           CustomerProgressRoutine = StartCoroutine(StartCustomerProgressRoutine());
         }
       }
+      else
+      {
+        tempPlayer.ReleaseDocking();
+      }
     }
   }
 
   public bool TrySetPlayer(Player player)
   {
+    /*
+     * currentCustomer가 있어야함.
+     * customer가 원하는 장비를 차고와야함.
+     */
+    if (!CurrentCustomer) return false;
+    if (currentCustomerFCB.equipmentType != player.currentEquipment) return false;
     //플레이어 정보 저장.
     CurrentPlayer = player;
-    player.gameObject.SetActive(false);
+    //player.gameObject.SetActive(false);
     return true;
+  }
+
+  public void ActionInput()
+  {
+    currentCustomerFCB.progress += 5;
+    progressText.text = currentCustomerFCB.progress.ToString();
   }
 
   #endregion
 
+  [SerializeField] private TextMeshPro progressText;
+  private FacilityControlBlock currentCustomerFCB;
+  
   private bool CheckReadyToProgress()
   {
-    if (!currentPlayer && !currentCustomer) return false;
-    Debug.Log("Ready!");
+    if (currentPlayer)
+    {
+      if (currentCustomer)
+      {
+        Debug.Log("Ready!");
+        currentCustomer.gameObject.SetActive(false);
+        return true;
+      }
+    }
     
     /*
      * 플레이어 / 손님 객체 할당되었는지 확인
      * 플레이어가 올바를 장비를 들고 왔는지 확인
      */
-    return true;
+    return false;
   }
 }

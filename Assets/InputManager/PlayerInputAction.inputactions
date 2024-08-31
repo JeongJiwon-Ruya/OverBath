@@ -15,7 +15,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Interaction",
+                    "name": "ItemInteraction",
                     "type": "Button",
                     "id": "0315114d-1fe3-44c1-9803-fc3a81a5b970",
                     "expectedControlType": "Button",
@@ -27,6 +27,15 @@
                     "name": "Dash",
                     "type": "Button",
                     "id": "2476757b-4af5-490a-8601-358fd9a23987",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "e55177a6-4140-4547-994e-65d822d1163a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -96,7 +105,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "PC",
-                    "action": "Interaction",
+                    "action": "ItemInteraction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -108,6 +117,17 @@
                     "processors": "",
                     "groups": "PC",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "89361753-7574-40b2-a91f-3f373e0c28db",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "Action",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

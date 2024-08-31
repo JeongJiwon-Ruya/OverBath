@@ -88,26 +88,30 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   
   public IEnumerator StartCustomerProgressRoutine()
   {
-    var fcb = CurrentCustomer.facilityFlow.Peek();
-    var a = new WaitForSeconds(0.01f);
-
-    while (fcb.progress < 100)
+    if (CurrentCustomer.facilityFlow.TryPeek(out var fcb))
     {
-      fcb.progress++;
-      progressText.text = fcb.progress.ToString();
-      yield return a;
-    }
+      while (fcb.progress < 100)
+      {
+        fcb.progress++;
+        progressText.text = fcb.progress.ToString();
+        yield return StaticData.progress;
+      }
 
-    progressText.text = "";
-    ReleaseCustomer();
+      progressText.text = "";
+      ReleaseCustomer();
+    }
+    else
+    {
+      Debug.Log("Current customer didn't have fcb");
+    }
   }
   public void ReleaseCustomer()
   {
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
     
-    GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-        new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+    /*GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
+        new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));*/
   }
   #endregion
   

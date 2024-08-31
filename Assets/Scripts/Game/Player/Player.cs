@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
@@ -7,7 +6,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
   //Base Component
-  private new Rigidbody rigidbody;
+  private Rigidbody rigidBody;
   private Animator animator;
 
   //Basic Move Parameter
@@ -26,6 +25,26 @@ public class Player : MonoBehaviour
   [SerializeField] private GameObject[] equipmentsOnHands;
   [SerializeField] private GameObject nearObject;
 
+  public BathItemType currentBathItem
+  {
+    get
+    {
+      var onHand = itemOnHands.FirstOrDefault(x => x.activeSelf);
+      return onHand ? onHand.GetComponent<BathItem>().Type : BathItemType.None;
+    }
+  }
+
+  public EquipmentType currentEquipment
+  {
+    get
+    {
+      var onHand = equipmentsOnHands.FirstOrDefault(x => x.activeSelf);
+      return onHand ? onHand.GetComponent<PlayerEquipment>().Type : EquipmentType.None;
+    }
+  }
+
+  //Action Parameter
+  private bool isDocking;
   
   //String Hash Parameter
   private static readonly int IsMove = Animator.StringToHash("isMove");
@@ -35,7 +54,7 @@ public class Player : MonoBehaviour
   private void Start()
   {
     animator = GetComponent<Animator>();
-    rigidbody = GetComponent<Rigidbody>();
+    rigidBody = GetComponent<Rigidbody>();
   }
 
   private void Update()
@@ -49,6 +68,7 @@ public class Player : MonoBehaviour
 
   public void OnMove(InputAction.CallbackContext context)
   {
+    if (isDocking) return;
     var readContext = context.ReadValue<Vector2>();
     movement = new Vector3(readContext.x, 0, readContext.y);
     if (!(Mathf.Approximately(movement.x, 0) && Mathf.Approximately(movement.z, 0)))
@@ -82,21 +102,21 @@ public class Player : MonoBehaviour
   {
     if (!context.performed) return;
     isDashing = true;
-    DOTween.To(() => rigidbody.velocity, x => rigidbody.velocity = x, movement * movementSpeed, dashDuration)
+    DOTween.To(() => rigidBody.velocity, x => rigidBody.velocity = x, movement * movementSpeed, dashDuration)
         .SetEase(Ease.OutCubic).From(movement * dashForce).OnComplete(EndDash);
   }
 
   private void EndDash()
   {
     isDashing = false;
-    rigidbody.velocity = Vector3.zero; // 대시 후 순간적으로 멈춤
+    rigidBody.velocity = Vector3.zero; // 대시 후 순간적으로 멈춤
   }
 
   #endregion
 
   #region Interaction
 
-  public void OnInteraction(InputAction.CallbackContext context)
+  public void OnItemInteraction(InputAction.CallbackContext context)
   {
     if (!context.performed) return;
 
@@ -142,14 +162,10 @@ public class Player : MonoBehaviour
 
     if (nearObject)
     {
-      if (nearObject.gameObject.TryGetComponent<IPlayerDocking>(out var itemHandler))
+      if (nearObject.gameObject.TryGetComponent<IPlayerDocking>(out var dockingHandler))
       {
-        if (itemHandler.TrySetPlayer(this))
-        {
-          /*
-           * 시설에 도킹
-           */
-        }
+        //R키로 도킹하세요.
+        Debug.Log("Press R to docking " + dockingHandler.CurrentPlayer.name);
       }
     }
     else
@@ -167,12 +183,6 @@ public class Player : MonoBehaviour
       return;
     }
 
-    if (nearObject.gameObject.TryGetComponent<TemperatureControlModule>(out var module))
-    {
-      module.ChangeFacilitiesTemperature();
-      return;
-    }
-
     if (nearObject.gameObject.TryGetComponent<BathItem>(out var bathItem))
     {
       HandleBathItemInteraction(bathItem);
@@ -181,9 +191,9 @@ public class Player : MonoBehaviour
     if (nearObject.gameObject.TryGetComponent<PlayerEquipment>(out var equipment))
     {
       HandlePlayerEquipmentInteraction(equipment);
-    } 
+    }
   }
-
+  
   private void HandleWarehouseInteraction(IWarehouse warehouse)
   {
     var item = warehouse.BathItemOut();
@@ -210,11 +220,11 @@ public class Player : MonoBehaviour
   {
     var newObj = Instantiate(item);
     newObj.transform.position = transform.position + transform.forward * dropDistance;
-    newObj.transform.localScale = Vector3.one * 7.5f;
+    newObj.transform.localScale = Vector3.one * 3.0f;
 
-    if (newObj.TryGetComponent<Collider>(out var collider))
+    if (newObj.TryGetComponent<Collider>(out var newObjectCollider))
     {
-      collider.enabled = true;
+      newObjectCollider.enabled = true;
     }
 
     newObj.AddComponent<Rigidbody>();
@@ -231,6 +241,51 @@ public class Player : MonoBehaviour
   
   #endregion
 
+  #region Action
+  public void OnAction(InputAction.CallbackContext context)
+  {
+    if (!context.performed) return;
+    if (!nearObject) return;
+
+    HandleNearInteraction();
+  }
+  public void ReleaseDocking()
+  {
+    isDocking = false;
+  }
+
+  private void HandleNearInteraction()
+  {
+    if (nearObject.gameObject.TryGetComponent<TemperatureControlModule>(out var module))
+    {
+      module.ChangeFacilitiesTemperature();
+      return;
+    }
+    if (nearObject.gameObject.TryGetComponent<IPlayerDocking>(out var playerDocking))
+    {
+      HandleDockingInteraction(playerDocking);
+    }
+  }
+  
+  private void HandleDockingInteraction(IPlayerDocking playerDocking)
+  {
+    if (!isDocking)
+    {
+      if (playerDocking.TrySetPlayer(this))
+      {
+        isDocking = true;
+        /*
+         * 시설에 도킹
+         */
+      }
+    }
+    else
+    {
+      playerDocking.ActionInput();
+    }
+  }
+  #endregion
+  
   #region ColliderEvent
 
   private void OnTriggerStay(Collider other)

@@ -104,7 +104,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
     {
       fcb.progress++;
       progressText.text = fcb.progress.ToString();
-      yield return new WaitForSeconds(0.05f);
+      yield return StaticData.progress;
     }
 
     progressText.text = "";

@@ -4,4 +4,6 @@ public interface IPlayerDocking
     public Player CurrentPlayer { get; set; }
     public bool TrySetPlayer(Player player);
 
+    public void ActionInput();
+
   }

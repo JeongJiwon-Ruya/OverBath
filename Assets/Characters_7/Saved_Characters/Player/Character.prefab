@@ -1756,8 +1756,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7297856467555200574}
   - {fileID: 7213185355006573687}
@@ -1829,7 +1829,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4313373547859852518}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 10
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1890,8 +1890,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.67, z: 0.632178}
-  m_Center: {x: -2.5338098e-10, y: 0.85, z: 0.36}
+  m_Size: {x: 0.8, y: 1.0783334, z: 0.632178}
+  m_Center: {x: -2.248729e-10, y: 0.6458323, z: 0.36000004}
 --- !u!114 &1337797049908910809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1938,7 +1938,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6571631524120154617}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
-        m_MethodName: OnInteraction
+        m_MethodName: OnItemInteraction
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1966,6 +1966,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 2476757b-4af5-490a-8601-358fd9a23987
     m_ActionName: PlayerActions/Dash[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6571631524120154617}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e55177a6-4140-4547-994e-65d822d1163a
+    m_ActionName: PlayerActions/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PC
   m_DefaultActionMap: PlayerActions
