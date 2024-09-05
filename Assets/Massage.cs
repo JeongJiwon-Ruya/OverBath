@@ -52,7 +52,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
   {
     GameEventBus.UnSubscribe(GameEventType.Request_Area, arg0 =>
     {
-      if (arg0 is { facilityType: FacilityType.HeaterArea, request: true })
+      if (arg0 is { facilityType: FacilityType.Massage, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
             new AreaInfoTransportData(FacilityType, transform.position));
@@ -81,6 +81,8 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (!value)
       {
         tempCustomer.gameObject.SetActive(true);
+        GameEventBus.Publish(GameEventType.SendAreaPosition,
+            new AreaInfoTransportData(FacilityType, transform.position));
       }
       else
       {
@@ -177,11 +179,6 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
         return true;
       }
     }
-    
-    /*
-     * 플레이어 / 손님 객체 할당되었는지 확인
-     * 플레이어가 올바를 장비를 들고 왔는지 확인
-     */
     return false;
   }
 }

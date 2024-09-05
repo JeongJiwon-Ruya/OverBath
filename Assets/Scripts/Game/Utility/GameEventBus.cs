@@ -7,9 +7,12 @@ public enum GameEventType
 {
   BathStateChange, 
   ShowerBoothTempStateChange,
+  SaunaTypePosition,
   SendAreaPosition,
+  
   Request_Bathtub,
   Request_ShowerBooth,
+  Request_Sauna,
   Request_Area
 }
 
@@ -70,6 +73,20 @@ public struct BathStateChangeTransportData
   public BathItemType bathItemType { get; private set; }
   public BathItemType pastBathItemType { get; private set; }
 }
+
+public struct SaunaTransportData
+{
+  public SaunaTransportData(FacilityType facilityType, BathItemType bathItemType, Vector3 facilityPosition)
+  {
+    this.facilityType = facilityType;
+    this.facilityPosition = facilityPosition;
+    this.bathItemType = bathItemType; 
+  }
+  
+  public FacilityType facilityType { get; private set; }
+  public BathItemType bathItemType { get; private set; }
+  public Vector3 facilityPosition { get; private set; }
+}
 #endregion
 
 public static class GameEventBus {
@@ -77,6 +94,8 @@ public static class GameEventBus {
   private static readonly IDictionary<GameEventType, UnityEvent<AreaInfoTransportData>> AreaInfoTransportDataEvents = new Dictionary<GameEventType, UnityEvent<AreaInfoTransportData>>();
   private static readonly IDictionary<GameEventType, UnityEvent<ShowerBoothStateChangeTransportData>> ShowerBoothTransportDataEvents = new Dictionary<GameEventType, UnityEvent<ShowerBoothStateChangeTransportData>>();
   private static readonly IDictionary<GameEventType, UnityEvent<BathStateChangeTransportData>> BathStateChangeTransportDataEvents = new Dictionary<GameEventType, UnityEvent<BathStateChangeTransportData>>();
+  private static readonly IDictionary<GameEventType, UnityEvent<SaunaTransportData>> SaunaTransportDataEvents = new Dictionary<GameEventType, UnityEvent<SaunaTransportData>>();
+  
 
   #region Subscribe
   public static void Subscribe(GameEventType type, UnityAction<ShowerBoothStateChangeTransportData> listener) {
@@ -120,6 +139,17 @@ public static class GameEventBus {
       AreaInfoTransportDataEvents.Add(type, thisEvent);
     }
   }
+  
+  public static void Subscribe(GameEventType type, UnityAction<SaunaTransportData> listener) {
+    if (SaunaTransportDataEvents.TryGetValue(type, out var thisEvent)) {
+      thisEvent.AddListener(listener);
+    }
+    else {
+      thisEvent = new UnityEvent<SaunaTransportData>();
+      thisEvent.AddListener(listener);
+      SaunaTransportDataEvents.Add(type, thisEvent);
+    }
+  }
   #endregion
   
   #region UnSubscribe
@@ -143,6 +173,12 @@ public static class GameEventBus {
       thisAction.RemoveListener(listener);
     }
   }
+  
+  public static void UnSubscribe(GameEventType type, UnityAction<SaunaTransportData> listener) {
+    if (SaunaTransportDataEvents.TryGetValue(type, out var thisAction)) {
+      thisAction.RemoveListener(listener);
+    }
+  }
   #endregion
   
   #region Publish
@@ -163,6 +199,11 @@ public static class GameEventBus {
   }
   public static void Publish(GameEventType type, AreaInfoTransportData data) {
     if (AreaInfoTransportDataEvents.TryGetValue(type, out var thisAction)) {
+      thisAction.Invoke(data);
+    }
+  }
+  public static void Publish(GameEventType type, SaunaTransportData data) {
+    if (SaunaTransportDataEvents.TryGetValue(type, out var thisAction)) {
       thisAction.Invoke(data);
     }
   }

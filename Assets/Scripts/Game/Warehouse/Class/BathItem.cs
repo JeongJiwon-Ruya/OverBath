@@ -6,6 +6,7 @@ public enum BathItemType
   Aroma, 
   BodyWash, 
   Shampoo,
+  Ocher,
   None = -99
 }
 public class BathItem : MonoBehaviour

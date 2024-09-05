@@ -111,8 +111,8 @@ public class HeaterArea : MonoBehaviour, ICustomerArea
     while (customer.moisture > 0)
     {
         customer.moisture--;
-        //Debug.Log(customer.moisture);
-        yield return StaticData.progress;
+        Debug.Log(customer.moisture);
+        yield return StaticData.areaProgress;
     }
     customer.facilityFlow.Peek().isUsingNow = false;
     RemoveCustomer(customer);

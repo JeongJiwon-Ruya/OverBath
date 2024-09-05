@@ -19,6 +19,7 @@ public class GameManger : MonoBehaviour
 
   private void Awake()
   {
+    GameObjectPool.Initialize();
     customerInfoUIDictionary = new Dictionary<Customer, GameObject>();
   }
 

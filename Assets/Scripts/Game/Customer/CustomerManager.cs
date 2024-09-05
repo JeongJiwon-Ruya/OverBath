@@ -60,6 +60,7 @@ public class CustomerManager : MonoBehaviour
     GameEventBus.Subscribe(GameEventType.SendAreaPosition, CheckFitCustomer_Area);
     GameEventBus.Subscribe(GameEventType.BathStateChange, CheckFitCustomer_Bathtub);
     GameEventBus.Subscribe(GameEventType.ShowerBoothTempStateChange, CheckFitCustomer_ShowerBooth);
+    GameEventBus.Subscribe(GameEventType.SaunaTypePosition, CheckFitCustomer_Sauna);
   }
 
   private void OnDisable()
@@ -67,6 +68,7 @@ public class CustomerManager : MonoBehaviour
     GameEventBus.UnSubscribe(GameEventType.SendAreaPosition, CheckFitCustomer_Area);
     GameEventBus.UnSubscribe(GameEventType.BathStateChange, CheckFitCustomer_Bathtub);
     GameEventBus.UnSubscribe(GameEventType.ShowerBoothTempStateChange, CheckFitCustomer_ShowerBooth);
+    GameEventBus.UnSubscribe(GameEventType.SaunaTypePosition, CheckFitCustomer_Sauna);
   }
   #endregion
   
@@ -184,6 +186,37 @@ public class CustomerManager : MonoBehaviour
     }
   }
   
+  private void CheckFitCustomer_Sauna(SaunaTransportData data)
+  {
+    var currentComingCustomer = customers.FirstOrDefault(x =>
+    {
+      if (x.facilityFlow.TryPeek(out var fcb))
+      {
+        return fcb.isMoving
+            && fcb.facilityType == data.facilityType;
+      }
+      return false;
+    });
+    if (currentComingCustomer != null)
+    {
+      currentComingCustomer.Stop();
+    }
+    
+    var fitCustomer = customers.FirstOrDefault(x =>
+    {
+      if (x.facilityFlow.TryPeek(out var fcb))
+      {
+        return fcb.isWaiting 
+            && fcb.facilityType == data.facilityType 
+            && fcb.itemTypeList.FirstOrDefault() == data.bathItemType;
+      }
+      return false;
+    });
+    if (fitCustomer != null)
+    {
+      _ = fitCustomer.Move_Facility(data.facilityPosition);
+    }
+  }
   
   private void TestMakeCustomer(int name)
   {

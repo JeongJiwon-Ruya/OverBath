@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
   //Interaction Parameter
   [SerializeField] private GameObject[] itemOnHands;
   [SerializeField] private GameObject[] equipmentsOnHands;
+  [SerializeField] private GameObject[] cleaningObjectsOnHands;
   [SerializeField] private GameObject nearObject;
 
   public BathItemType currentBathItem
@@ -131,6 +132,12 @@ public class Player : MonoBehaviour
       HandleEquipmentOnHands();
       return;
     }
+
+    if (cleaningObjectsOnHands.Any(x => x.activeSelf))
+    {
+      HandleCleaningObjectOnHands();
+      return;
+    }
     
     if (nearObject) HandleNearObject();
   }
@@ -175,6 +182,26 @@ public class Player : MonoBehaviour
     }
   }
 
+  private void HandleCleaningObjectOnHands()
+  {
+    var activeObject = cleaningObjectsOnHands.First(x => x.activeSelf);
+    if (nearObject)
+    {
+      if (nearObject.TryGetComponent<CleaningBox>(out var cleaningBox))
+      {
+        if (cleaningBox.TakeCleaningObject(activeObject))
+        {
+          DeactivateAllCleaningObjectsOnHand();
+        }
+      }
+    }
+    else
+    {
+      DropItem(activeObject);
+      DeactivateAllCleaningObjectsOnHand();
+    }
+  }
+  
   private void HandleNearObject()
   {
     if (nearObject.gameObject.TryGetComponent<IWarehouse>(out var warehouse))
@@ -191,6 +218,11 @@ public class Player : MonoBehaviour
     if (nearObject.gameObject.TryGetComponent<PlayerEquipment>(out var equipment))
     {
       HandlePlayerEquipmentInteraction(equipment);
+    }
+
+    if (nearObject.gameObject.TryGetComponent<Bucket>(out var cleaningObject))
+    {
+      HandleCleaningObjectInteraction(cleaningObject);
     }
   }
   
@@ -213,9 +245,15 @@ public class Player : MonoBehaviour
     DeactivateAllEquipmentsOnHands();
     Destroy(equipment.gameObject);
     equipmentsOnHands[(int)equipment.Type].SetActive(true);
-    
   }
 
+  private void HandleCleaningObjectInteraction(Bucket cleaningObject)
+  {
+    DeactivateAllCleaningObjectsOnHand();
+    GameObjectPool.DespawnObject(cleaningObject.gameObject);
+    cleaningObjectsOnHands[0].SetActive(true);
+  }
+  
   private void DropItem(GameObject item)
   {
     var newObj = Instantiate(item);
@@ -230,6 +268,11 @@ public class Player : MonoBehaviour
     newObj.AddComponent<Rigidbody>();
   }
 
+  private void DeactivateAllCleaningObjectsOnHand()
+  {
+    foreach (var cleaningObjectInHand in cleaningObjectsOnHands) cleaningObjectInHand.SetActive(false);
+  }
+  
   private void DeactivateAllItemsOnHands()
   {
     foreach (var itemOnHand in itemOnHands) itemOnHand.SetActive(false);

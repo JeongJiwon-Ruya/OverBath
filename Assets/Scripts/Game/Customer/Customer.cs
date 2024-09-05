@@ -59,13 +59,17 @@ public class Customer : MonoBehaviour
     });
     
     {
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
+      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
+      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
+      //     {
+      //         (BathItemType)Random.Range(0,1)
+      //     }, temperature = Random.Range(36,37)});
+      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
+      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Sauna, itemTypeList = new List<BathItemType>()
           {
-              (BathItemType)Random.Range(0,1)
-          }, temperature = Random.Range(36,37)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
+              BathItemType.Ocher
+          }});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.ExitArea});
     }
@@ -104,6 +108,12 @@ public class Customer : MonoBehaviour
         GameEventBus.Publish(GameEventType.Request_ShowerBooth, new RequestTransportData(fcb.facilityType));
         break;
       case FacilityType.Massage:
+        GameEventBus.Publish(GameEventType.Request_Area, new RequestTransportData(fcb.facilityType));
+        break;
+      case FacilityType.Sauna:
+        GameEventBus.Publish(GameEventType.Request_Sauna, new RequestTransportData(fcb.facilityType));
+        break;
+      case FacilityType.HeaterArea:
         GameEventBus.Publish(GameEventType.Request_Area, new RequestTransportData(fcb.facilityType));
         break;
       default:
