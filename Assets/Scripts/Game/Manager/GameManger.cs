@@ -10,15 +10,37 @@ public enum GameState {Ready, Start, Pause, GameOver}
 
 public class GameManger : MonoBehaviour
 {
+  private readonly int timeLimit = 90;
+  
+  public static GameState gameState = GameState.Ready;
+  
+  [SerializeField] private TextMeshProUGUI standByText;
+  [SerializeField]private GameObject gameOverPanel;
+  
   [SerializeField]private CustomerManager customerManager;
   [SerializeField]private RectTransform customerInfoScrollView;
   [SerializeField]private GameObject customerInfoUIPrefab;
+  
   private Dictionary<Customer, GameObject> customerInfoUIDictionary;
 
   [SerializeField] private TextMeshProUGUI timerText;
+  [SerializeField]private TextMeshProUGUI cashText;
+
+  private int cash;
+  public int Cash
+  {
+    get => cash;
+    set
+    {
+      cash = value;
+      cashText.text = cash.ToString();
+    }
+  }
 
   private void Awake()
   {
+    Time.timeScale = 1f;
+    gameState = GameState.Ready;
     GameObjectPool.Initialize();
     customerInfoUIDictionary = new Dictionary<Customer, GameObject>();
   }
@@ -30,7 +52,13 @@ public class GameManger : MonoBehaviour
 
   private IEnumerator MainTimer()
   {
-    int timeLimit = 30;
+    standByText.gameObject.SetActive(true);
+    standByText.text = "Ready...";
+    yield return new WaitForSeconds(3f);
+    standByText.text = "Start!";
+    yield return new WaitForSeconds(1f);
+    gameState = GameState.Start;
+    standByText.gameObject.SetActive(false);
     int currentTime = timeLimit;
     while (currentTime > 0)
     {
@@ -39,6 +67,9 @@ public class GameManger : MonoBehaviour
       yield return new WaitForSeconds(1f);
     }
 
+    Debug.Log("Game Over!");
+    Time.timeScale = 0f;
+    gameOverPanel.SetActive(true);
   }
 
   public void MakeCustomerInfoUI(Customer customer)

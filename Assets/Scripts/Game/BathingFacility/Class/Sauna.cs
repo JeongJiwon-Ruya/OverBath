@@ -103,7 +103,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
 
   public void ReleaseCustomer()
   {
-    GameObjectPool.SpawnObject(transform.position + new Vector3(0, 0, -1));
+    GameObjectPool.SpawnObject(transform.position);
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
     /*

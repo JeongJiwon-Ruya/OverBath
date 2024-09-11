@@ -107,6 +107,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   }
   public void ReleaseCustomer()
   {
+    GameObjectPool.SpawnObject(transform.position);
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
     

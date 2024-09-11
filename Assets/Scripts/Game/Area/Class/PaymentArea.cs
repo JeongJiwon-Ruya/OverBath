@@ -12,6 +12,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
   /// 
   /// </summary>
 
+  [SerializeField]private GameManger gameManger;
   private Coroutine paymentCoroutine;
   [SerializeField]private Transform[] customersSeat;
   
@@ -20,6 +21,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
 
   private void Awake()
   {
+    if(!gameManger) gameManger = GameObject.FindWithTag("GameManager").GetComponent<GameManger>();
     FacilityType = FacilityType.PaymentArea;
     customers = new ObservableQueue<Customer>();
     customers.ObserveAdd().Subscribe(newCustomer =>
@@ -102,6 +104,8 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
   public void RemoveCustomer(Customer customer = null)
   {
     Debug.Log("Remove Customer");
+    var settledCustomer = (customers as ObservableQueue<Customer>)?.Peek();
+    if (settledCustomer) SettleCost(settledCustomer.useFacilityCount, settledCustomer.stress);
     (customers as ObservableQueue<Customer>)?.Dequeue();
   }
 
@@ -125,7 +129,7 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
   }
   
   #endregion
-
+  
   private IEnumerator PaymentRoutine()
   {
     while (isPlayerIn)
@@ -133,5 +137,10 @@ public class PaymentArea : MonoBehaviour, ICustomerArea, IPlayerInteractionArea
       if(customers.Count != 0 && customers.First().transform.position.IsNear(customersSeat[0].position)) RemoveCustomer();
       yield return new WaitForSeconds(1f);
     }
-  } 
+  }
+
+  private void SettleCost(int useFacilityCount, int stress)
+  {
+    gameManger.Cash += useFacilityCount * (50 - stress * 3);
+  }
 }

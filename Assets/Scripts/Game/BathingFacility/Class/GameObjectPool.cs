@@ -31,7 +31,7 @@ public static class GameObjectPool
   public static GameObject SpawnObject(Vector3 position)
   {
     var obj = bucketsPool.Get();
-    obj.transform.position = position;
+    obj.transform.position = position + new Vector3(Random.Range(-1f,1f), 0, Random.Range(-1f,1f));
     return obj;
   }
 

@@ -84,7 +84,10 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
         StopCoroutine(CustomerProgressRoutine);
       }
 
-      if (value) value.gameObject.SetActive(false);
+      if (value)
+      {
+        value.gameObject.SetActive(false);
+      }
       else
       {
         GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
@@ -114,6 +117,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   
   public void ReleaseCustomer()
   {
+    GameObjectPool.SpawnObject(transform.position);
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
   }

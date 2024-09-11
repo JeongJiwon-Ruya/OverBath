@@ -19,7 +19,7 @@ public class Customer : MonoBehaviour
   private CancellationTokenSource moveCancellationSource = new ();
   
   [SerializeField]private NavMeshAgent agent;
-
+  public int useFacilityCount;
   private void Awake()
   {
     if (!animator) animator = GetComponent<Animator>();
@@ -50,22 +50,28 @@ public class Customer : MonoBehaviour
     lifeCycleCancellationSource.Dispose();
   }
 
+  public NavMeshAgent GetNavMeshAgent()
+  {
+    return agent;
+  }
+  
   public void InitializeFacilityFlow()
   {
     facilityFlow = new ObservableQueue<FacilityControlBlock>();
     facilityFlow.ObserveRemove().Subscribe(removeEvent =>
     {
+      useFacilityCount++;
       FindNextDestination();
     });
     
     {
-      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
-      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
-      //     {
-      //         (BathItemType)Random.Range(0,1)
-      //     }, temperature = Random.Range(36,37)});
-      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
-      // facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
+          {
+              (BathItemType)Random.Range(0,2)
+          }, temperature = Random.Range(33,38)});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
+      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
       facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Sauna, itemTypeList = new List<BathItemType>()
           {
               BathItemType.Ocher

@@ -172,7 +172,7 @@ public class Player : MonoBehaviour
       if (nearObject.gameObject.TryGetComponent<IPlayerDocking>(out var dockingHandler))
       {
         //R키로 도킹하세요.
-        Debug.Log("Press R to docking " + dockingHandler.CurrentPlayer.name);
+        Debug.Log("Press R to docking ");
       }
     }
     else
@@ -192,6 +192,12 @@ public class Player : MonoBehaviour
         if (cleaningBox.TakeCleaningObject(activeObject))
         {
           DeactivateAllCleaningObjectsOnHand();
+        }
+      } else if (nearObject.TryGetComponent<Filth>(out var filth))
+      {
+        if (activeObject.TryGetComponent<Broomstick>(out var broomstick))
+        {
+          Destroy(filth.gameObject);
         }
       }
     }
@@ -220,7 +226,7 @@ public class Player : MonoBehaviour
       HandlePlayerEquipmentInteraction(equipment);
     }
 
-    if (nearObject.gameObject.TryGetComponent<Bucket>(out var cleaningObject))
+    if (nearObject.gameObject.TryGetComponent<ICleaningObject>(out var cleaningObject))
     {
       HandleCleaningObjectInteraction(cleaningObject);
     }
@@ -247,11 +253,22 @@ public class Player : MonoBehaviour
     equipmentsOnHands[(int)equipment.Type].SetActive(true);
   }
 
-  private void HandleCleaningObjectInteraction(Bucket cleaningObject)
+  private void HandleCleaningObjectInteraction(ICleaningObject cleaningObject)
   {
-    DeactivateAllCleaningObjectsOnHand();
-    GameObjectPool.DespawnObject(cleaningObject.gameObject);
-    cleaningObjectsOnHands[0].SetActive(true);
+    //손에 뭐 없음.
+      DeactivateAllCleaningObjectsOnHand();
+      switch (cleaningObject.cleaningObjectType)
+      {
+        case CleaningObjectType.Bucket:
+          GameObjectPool.DespawnObject(cleaningObject.GetGameObject());
+          break;
+        case CleaningObjectType.Broomstick:
+          Destroy(cleaningObject.GetGameObject());
+          break;
+        default:
+          return;
+      }
+      cleaningObjectsOnHands[(int)cleaningObject.cleaningObjectType].SetActive(true);
   }
   
   private void DropItem(GameObject item)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using ObservableCollections;
 using R3;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class CustomerManager : MonoBehaviour
 
 
   #region EventFunction
-  private void Awake()
+  private async void Awake()
   {
     customers = new ObservableList<Customer>();
     customers.ObserveAdd().Subscribe(addEvent =>
@@ -48,10 +49,12 @@ public class CustomerManager : MonoBehaviour
     });
   }
 
-  private void Start()
+  private async void Start()
   {
+    await UniTask.WaitUntil(() => GameManger.gameState == GameState.Start);
     MakeCustomer();
-    //MakeCustomer();
+    MakeCustomer();
+    MakeCustomer();
   }
   
   
