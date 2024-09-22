@@ -1,19 +1,36 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class FilthGenerator : MonoBehaviour
 {
+  private bool isFilthGenerate;
+  private (int min, int max) filthPeriod;
+  
   [SerializeField] private GameObject filth;
   [SerializeField] private GameObject bottom;
   private Vector2 min;
   private Vector2 max;
-  
+
+  private void Awake()
+  {
+    isFilthGenerate = StageInfoReader.currentStageInfo.Filth;
+    if (isFilthGenerate)
+    {
+      var periodString = StageInfoReader.currentStageInfo.FilthPeriod.Split('/');
+      filthPeriod = (int.Parse(periodString[0]), int.Parse(periodString[1]));
+    }
+  }
+
   private async void Start()
   {
     await UniTask.WaitUntil(() => GameManger.gameState == GameState.Start);
+    if (!isFilthGenerate) return;
+    
     var a = bottom.transform.localScale;
     max = new Vector2(a.x * 5f, a.z * 5f);
     min = max * -1;
@@ -27,7 +44,7 @@ public class FilthGenerator : MonoBehaviour
   {
     while (true)
     {
-      await UniTask.WaitForSeconds(Random.Range(5, 15));
+      await UniTask.WaitForSeconds(Random.Range(filthPeriod.min, filthPeriod.max));
       var spawned = false;
       do
       {

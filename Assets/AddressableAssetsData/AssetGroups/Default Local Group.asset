@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: bd327e2d8e03d4418aa050474ec3366b
-  m_SerializeEntries:
-  - m_GUID: ff34f69f60f4248b2a664c9fef35ee56
-    m_Address: Assets/Prefabs/Game/Bucket.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8900dbc5ea897479db0310009a5548dc, type: 2}
   m_SchemaSet:

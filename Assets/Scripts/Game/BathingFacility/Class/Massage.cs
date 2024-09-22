@@ -110,7 +110,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
 
   public void ReleaseCustomer()
   {
-    GameObjectPool.SpawnObject(transform.position);
+    SpawnBucketManager.SpawnObject(transform.position);
     CurrentCustomer.facilityFlow.Dequeue();
     CurrentCustomer = null;
     CurrentPlayer = null;

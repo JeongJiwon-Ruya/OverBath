@@ -260,7 +260,7 @@ public class Player : MonoBehaviour
       switch (cleaningObject.cleaningObjectType)
       {
         case CleaningObjectType.Bucket:
-          GameObjectPool.DespawnObject(cleaningObject.GetGameObject());
+          SpawnBucketManager.DespawnObject(cleaningObject.GetGameObject());
           break;
         case CleaningObjectType.Broomstick:
           Destroy(cleaningObject.GetGameObject());

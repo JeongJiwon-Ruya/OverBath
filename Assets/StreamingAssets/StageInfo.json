@@ -12,10 +12,12 @@
     "Sauna": false,
     "SaunaType": "",
     "Massage": false,
+    "MassageType": "Towel",
     "Bucket": false,
     "BucketPercentage": 20,
     "Filth": false,
-    "FilthPeriod": ""
+    "FilthPeriod": "",
+    "Temperature": "35/38"
   },
   {
     "World": 1,
@@ -30,10 +32,12 @@
     "Sauna": false,
     "SaunaType": "",
     "Massage": false,
+    "MassageType": "Towel",
     "Bucket": false,
     "BucketPercentage": 20,
     "Filth": false,
-    "FilthPeriod": ""
+    "FilthPeriod": "",
+    "Temperature": "34/38"
   },
   {
     "World": 1,
@@ -48,9 +52,11 @@
     "Sauna": false,
     "SaunaType": "",
     "Massage": false,
+    "MassageType": "Towel",
     "Bucket": false,
     "BucketPercentage": 20,
     "Filth": false,
-    "FilthPeriod": ""
+    "FilthPeriod": "",
+    "Temperature": "35/41"
   }
 ]

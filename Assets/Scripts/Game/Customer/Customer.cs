@@ -63,22 +63,38 @@ public class Customer : MonoBehaviour
       useFacilityCount++;
       FindNextDestination();
     });
+
+    var temperatureInfo = StageInfoReader.currentStageInfo.Temperature.Split('/');
+    (var min, var max) = (int.Parse(temperatureInfo[0]), int.Parse(temperatureInfo[1]));
     
+    if (StageInfoReader.currentStageInfo.Bathtub)
     {
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.Bathtub ,itemTypeList = new List<BathItemType>()
-          {
-              (BathItemType)Random.Range(0,2)
-          }, temperature = Random.Range(33,38)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType =FacilityType.ShowerBooth ,itemTypeList = new List<BathItemType>() { (BathItemType)Random.Range(2,4) }, temperature = Random.Range(33,40)});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Massage, equipmentType = EquipmentType.Towel});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.HeaterArea});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.Sauna, itemTypeList = new List<BathItemType>()
-          {
-              BathItemType.Ocher
-          }});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.PaymentArea});
-      facilityFlow.Enqueue(new FacilityControlBlock(){facilityType = FacilityType.ExitArea});
+      var itemType = StageInfoReader.currentStageInfo.BathtubType.Split('/');
+      var itemTypeInit = (BathItemType)Random.Range(0, itemType.Length);
+      facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.Bathtub, itemTypeList = new List<BathItemType> {itemTypeInit}, temperature = Random.Range(min, max)});
     }
+
+    if (StageInfoReader.currentStageInfo.ShowerBooth)
+    {
+      var itemType = StageInfoReader.currentStageInfo.ShowerBoothType.Split('/');
+      var itemTypeInit = (BathItemType)((int)BathItemType.BodyWash + Random.Range(0, itemType.Length));
+      facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.ShowerBooth, itemTypeList = new List<BathItemType> {itemTypeInit}, temperature = Random.Range(min, max)});
+    }
+    if (StageInfoReader.currentStageInfo.Massage)
+    {
+      var itemType = StageInfoReader.currentStageInfo.MassageType.Split('/');
+      var itemTypeInit = (EquipmentType)Random.Range(0, itemType.Length);
+      facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.Massage, equipmentType = itemTypeInit});
+    }
+    if (StageInfoReader.currentStageInfo.Sauna)
+    {
+      var itemType = StageInfoReader.currentStageInfo.SaunaType.Split('/');
+      var itemTypeInit = (BathItemType)((int)BathItemType.Ocher + Random.Range(0, itemType.Length));
+      facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.Sauna, itemTypeList = new List<BathItemType> {itemTypeInit}});
+    }
+    
+    facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.PaymentArea});
+    facilityFlow.Enqueue(new FacilityControlBlock {facilityType = FacilityType.ExitArea});
   }
 
   private void FindNextDestination()
@@ -150,7 +166,7 @@ public class Customer : MonoBehaviour
     fcb.isMoving = true;
     animator.SetBool("Move", true);
     agent.SetDestination(new Vector3(destination.x, transform.position.y, destination.z));
-    await UniTask.WaitUntil(() => agent.remainingDistance < 2f, cancellationToken: moveCancellationSource.Token);
+    await UniTask.WaitUntil(() => agent.remainingDistance < 0.1f, cancellationToken: moveCancellationSource.Token);
     await UniTask.WaitWhile(() => gameObject.activeSelf);
   }
 

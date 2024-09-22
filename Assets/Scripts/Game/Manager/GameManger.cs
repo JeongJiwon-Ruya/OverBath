@@ -41,7 +41,7 @@ public class GameManger : MonoBehaviour
   {
     Time.timeScale = 1f;
     gameState = GameState.Ready;
-    GameObjectPool.Initialize();
+    SpawnBucketManager.Initialize();
     customerInfoUIDictionary = new Dictionary<Customer, GameObject>();
   }
 
