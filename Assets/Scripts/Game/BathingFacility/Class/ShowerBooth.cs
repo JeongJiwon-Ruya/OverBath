@@ -22,6 +22,8 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   #region Event Function
   private void Awake()
   {
+    enterPoint = GetComponentInChildren<FacilityEnterPoint>();
+    position = transform.position;
     FacilityType = FacilityType.ShowerBooth;
     InitializeBathItemFields();
   }
@@ -46,7 +48,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
       if (!CurrentCustomer && arg.request)
       {
         GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature));
       }
     });
   }
@@ -58,7 +60,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
       if (!CurrentCustomer && arg.request)
       {
         GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature));
       }
     });
   }
@@ -69,6 +71,9 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   #endregion
   
   #region IBathingFacility
+
+  public FacilityEnterPoint enterPoint { get; set; }
+  public Vector3 position { get; set; }
   public FacilityType FacilityType { get; set; }
   
   private Customer currentCustomer;
@@ -91,7 +96,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
       else
       {
         GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature));
       }
       currentCustomer = value;
       CheckBathItemIsFitCurrentCustomer();
@@ -155,7 +160,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
       if (symbol == TemperatureControlSymbol.Plus) Temperature++;
       else Temperature--;
       GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-          new ShowerBoothStateChangeTransportData(FacilityType, symbol, transform.position, Temperature));
+          new ShowerBoothStateChangeTransportData(FacilityType, symbol, enterPoint.transform.position, Temperature));
     }
   }
   #endregion

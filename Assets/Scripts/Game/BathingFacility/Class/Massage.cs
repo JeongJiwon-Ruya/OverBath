@@ -18,6 +18,8 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
   #region Event Function
   private void Awake()
   {
+    enterPoint = GetComponentInChildren<FacilityEnterPoint>();
+    position = transform.position;
     FacilityType = FacilityType.Massage;
   }
   
@@ -43,7 +45,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (arg0 is { facilityType: FacilityType.Massage, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(FacilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, enterPoint.transform.position));
       }
     });
   }
@@ -55,7 +57,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (arg0 is { facilityType: FacilityType.Massage, request: true })
       {
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(FacilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, enterPoint.transform.position));
       }
     });
   }
@@ -64,6 +66,8 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
 
   #region IBathingFacility
 
+  public FacilityEnterPoint enterPoint { get; set; }
+  public Vector3 position { get; set; }
   public FacilityType FacilityType { get; set; }
 
   private Customer currentCustomer;
@@ -82,7 +86,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
       {
         tempCustomer.gameObject.SetActive(true);
         GameEventBus.Publish(GameEventType.SendAreaPosition,
-            new AreaInfoTransportData(FacilityType, transform.position));
+            new AreaInfoTransportData(FacilityType, enterPoint.transform.position));
       }
       else
       {

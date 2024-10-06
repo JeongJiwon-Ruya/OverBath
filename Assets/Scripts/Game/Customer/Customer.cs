@@ -166,8 +166,8 @@ public class Customer : MonoBehaviour
     fcb.isMoving = true;
     animator.SetBool("Move", true);
     agent.SetDestination(new Vector3(destination.x, transform.position.y, destination.z));
-    await UniTask.WaitUntil(() => agent.remainingDistance < 0.1f, cancellationToken: moveCancellationSource.Token);
-    await UniTask.WaitWhile(() => gameObject.activeSelf);
+    /*await UniTask.WaitUntil(() => agent.remainingDistance < 0.1f, cancellationToken: moveCancellationSource.Token);
+    await UniTask.WaitWhile(() => gameObject.activeSelf);*/
   }
 
   public async UniTask Move_Waiting(Vector3 destination)

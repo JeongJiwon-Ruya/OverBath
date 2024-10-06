@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using ObservableCollections;
@@ -5,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using R3;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBathItemHandler
 {
@@ -18,18 +20,20 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   private void Awake()
   {
     FacilityType = FacilityType.Bathtub;
+    position = transform.position;
+    enterPoint = GetComponentInChildren<FacilityEnterPoint>();
     InitializeBathItemFields();
   }
+
   private void OnCollisionEnter(Collision other)
   {
-    if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
+    /*if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
     if (!customer.facilityFlow.TryPeek(out var fcb)) return;
 
     if (fcb.facilityType == FacilityType && fcb.temperature == Temperature)
     {
       Debug.Log("Customer Lock in");
-      CurrentCustomer = customer;
-    }
+    }*/
   }
   
   private void OnEnable()
@@ -39,7 +43,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       if (!CurrentCustomer && arg.request )
       {
         GameEventBus.Publish(GameEventType.BathStateChange,
-            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
+            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
       }
     });
   }
@@ -51,15 +55,19 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       if (!CurrentCustomer && arg.request)
       {
         GameEventBus.Publish(GameEventType.BathStateChange,
-            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
+            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
       }
     });
   }
   #endregion
   
   #region IBathingFacility
+
+  public FacilityEnterPoint enterPoint { get; set; }
+  public Vector3 position { get; set; }
   public FacilityType FacilityType { get; set; }
   private Customer currentCustomer;
+  private float speed;
   public Customer CurrentCustomer
   {
     get => currentCustomer;
@@ -74,13 +82,13 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
       currentCustomer = value;
       if (value)
       {
-        value.gameObject.SetActive(false);
+        //value.gameObject.SetActive(false);
         CustomerProgressRoutine = StartCoroutine(StartCustomerProgressRoutine());
       }
       else
       {
-        GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-            new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));
+        GameEventBus.Publish(GameEventType.BathStateChange,
+            new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature, TryPeekBathItem(), TryPeekBathItem()));
       }
     }
   }
@@ -88,6 +96,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   
   public IEnumerator StartCustomerProgressRoutine()
   {
+    yield return new WaitForSeconds(0.3f);
     if (CurrentCustomer.facilityFlow.TryPeek(out var fcb))
     {
       while (fcb.progress < 100)
@@ -108,8 +117,18 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   public void ReleaseCustomer()
   {
     SpawnBucketManager.SpawnObject(transform.position);
-    CurrentCustomer.facilityFlow.Dequeue();
-    CurrentCustomer = null;
+
+    CurrentCustomer.transform.eulerAngles = Vector3.Scale(CurrentCustomer.transform.eulerAngles, Vector3.down); 
+    CurrentCustomer.animator.SetBool("In", false);
+    CurrentCustomer.animator.SetBool("Out", true);
+    CurrentCustomer.gameObject.transform.DOMove(enterPoint.transform.position, 1.1f).SetEase(Ease.InSine)
+        .OnComplete(() =>
+        {
+          CurrentCustomer.GetNavMeshAgent().enabled = true;
+          CurrentCustomer.animator.SetTrigger("OutIdle");
+          CurrentCustomer.facilityFlow.Dequeue();
+          CurrentCustomer = null;
+        });
     
     /*GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
         new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));*/
@@ -145,8 +164,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     {
       if (symbol == TemperatureControlSymbol.Plus) Temperature++;
       else if (symbol == TemperatureControlSymbol.Minus) Temperature--;
-      GameEventBus.Publish(GameEventType.BathStateChange,
-          new BathStateChangeTransportData(FacilityType, symbol, transform.position, Temperature, TryPeekBathItem(),
+      GameEventBus.Publish(GameEventType.BathStateChange, new BathStateChangeTransportData(FacilityType, symbol, enterPoint.transform.position, Temperature, TryPeekBathItem(),
               TryPeekBathItem()));
     }
   }
@@ -189,8 +207,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
 
       (BathItems as ObservableQueue<BathItemType>)?.Enqueue(bathItem);
       Debug.Log(bathItem + " In!");
-      GameEventBus.Publish(GameEventType.BathStateChange,
-          new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature,
+      GameEventBus.Publish(GameEventType.BathStateChange, new BathStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, enterPoint.transform.position, Temperature,
               bathItem, pastBathItem));
     }
 

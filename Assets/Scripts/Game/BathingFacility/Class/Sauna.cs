@@ -9,7 +9,9 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
   #region Unity Event
   private void Awake()
   {
+    enterPoint = GetComponentInChildren<FacilityEnterPoint>();
     FacilityType = FacilityType.Sauna;
+    position = transform.position;
     bathItemType = BathItemType.Ocher;
   }
   
@@ -32,7 +34,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (arg0 is { facilityType: FacilityType.Sauna, request: true })
       {
         GameEventBus.Publish(GameEventType.SaunaTypePosition,
-            new SaunaTransportData(FacilityType, bathItemType, transform.position));
+            new SaunaTransportData(FacilityType, bathItemType, enterPoint.transform.position));
       }
     });
   }
@@ -44,13 +46,16 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (arg0 is { facilityType: FacilityType.Sauna, request: true })
       {
         GameEventBus.Publish(GameEventType.SaunaTypePosition,
-            new SaunaTransportData(FacilityType, bathItemType, transform.position));
+            new SaunaTransportData(FacilityType, bathItemType, enterPoint.transform.position));
       }
     });
   }
   #endregion
   
   #region IBathingFacility
+
+  public FacilityEnterPoint enterPoint { get; set; }
+  public Vector3 position { get; set; }
   public FacilityType FacilityType { get; set; }
 
   private Customer currentCustomer;
@@ -69,7 +74,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
         CurrentCustomer.gameObject.SetActive(true);
         currentCustomer = value;
         GameEventBus.Publish(GameEventType.SaunaTypePosition,
-            new SaunaTransportData(FacilityType, bathItemType, transform.position));
+            new SaunaTransportData(FacilityType, bathItemType, enterPoint.transform.position));
       }
     } 
   }

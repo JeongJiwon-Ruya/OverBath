@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
   //Base Component
-  private Rigidbody rigidBody;
-  private Animator animator;
+  [SerializeField] private Rigidbody rigidBody;
+  [SerializeField] private Animator animator;
 
   //Basic Move Parameter
   [SerializeField] private float movementSpeed = 7f;
@@ -54,8 +54,6 @@ public class Player : MonoBehaviour
 
   private void Start()
   {
-    animator = GetComponent<Animator>();
-    rigidBody = GetComponent<Rigidbody>();
   }
 
   private void Update()
@@ -101,6 +99,7 @@ public class Player : MonoBehaviour
 
   public void OnDash(InputAction.CallbackContext context)
   {
+    animator.SetBool("isDash",true);
     if (!context.performed) return;
     isDashing = true;
     DOTween.To(() => rigidBody.velocity, x => rigidBody.velocity = x, movement * movementSpeed, dashDuration)
@@ -109,6 +108,7 @@ public class Player : MonoBehaviour
 
   private void EndDash()
   {
+    animator.SetBool("isDash",false);
     isDashing = false;
     rigidBody.velocity = Vector3.zero; // 대시 후 순간적으로 멈춤
   }
