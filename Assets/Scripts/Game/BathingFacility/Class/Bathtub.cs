@@ -20,7 +20,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   private void Awake()
   {
     FacilityType = FacilityType.Bathtub;
-    position = transform.position;
+    usingPosition = transform.position;
     enterPoint = GetComponentInChildren<FacilityEnterPoint>();
     InitializeBathItemFields();
   }
@@ -64,7 +64,7 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
   #region IBathingFacility
 
   public FacilityEnterPoint enterPoint { get; set; }
-  public Vector3 position { get; set; }
+  public Vector3 usingPosition { get; set; }
   public FacilityType FacilityType { get; set; }
   private Customer currentCustomer;
   private float speed;
@@ -119,19 +119,17 @@ public class Bathtub : MonoBehaviour, IBathingFacility, ITemperatureControl, IBa
     SpawnBucketManager.SpawnObject(transform.position);
 
     CurrentCustomer.transform.eulerAngles = Vector3.Scale(CurrentCustomer.transform.eulerAngles, Vector3.down); 
-    CurrentCustomer.animator.SetBool("In", false);
+    CurrentCustomer.animator.SetBool($"In_{FacilityType}", false);
     CurrentCustomer.animator.SetBool("Out", true);
     CurrentCustomer.gameObject.transform.DOMove(enterPoint.transform.position, 1.1f).SetEase(Ease.InSine)
         .OnComplete(() =>
         {
+          CurrentCustomer.animator.SetBool("Out", false);
           CurrentCustomer.GetNavMeshAgent().enabled = true;
           CurrentCustomer.animator.SetTrigger("OutIdle");
           CurrentCustomer.facilityFlow.Dequeue();
           CurrentCustomer = null;
         });
-    
-    /*GameEventBus.Publish(GameEventType.ShowerBoothTempStateChange,
-        new ShowerBoothStateChangeTransportData(FacilityType, TemperatureControlSymbol.Keep, transform.position, Temperature));*/
   }
   #endregion
   

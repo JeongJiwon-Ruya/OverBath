@@ -5,6 +5,7 @@ using ObservableCollections;
 using TMPro;
 using UnityEngine;
 using R3;
+using DG.Tweening;
 
 public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl, IBathItemHandler
 {
@@ -23,14 +24,14 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   private void Awake()
   {
     enterPoint = GetComponentInChildren<FacilityEnterPoint>();
-    position = transform.position;
+    usingPosition = transform.position;
     FacilityType = FacilityType.ShowerBooth;
     InitializeBathItemFields();
   }
   private void OnCollisionEnter(Collision other)
   {
-    if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
-    /*if (!customer.facilityFlow.TryPeek(out var fcb)) return;*/
+    /*if (!other.gameObject.TryGetComponent<Customer>(out var customer)) return;
+    /*if (!customer.facilityFlow.TryPeek(out var fcb)) return;#1#
     if (customer.facilityFlow.Count == 0) return;
     var fcb = customer.facilityFlow.Peek();
     
@@ -38,7 +39,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
     {
       Debug.Log("Customer Lock in");
       CurrentCustomer = customer;
-    }
+    }*/
   }
 
   private void OnEnable()
@@ -73,7 +74,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   #region IBathingFacility
 
   public FacilityEnterPoint enterPoint { get; set; }
-  public Vector3 position { get; set; }
+  public Vector3 usingPosition { get; set; }
   public FacilityType FacilityType { get; set; }
   
   private Customer currentCustomer;
@@ -91,7 +92,7 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
 
       if (value)
       {
-        value.gameObject.SetActive(false);
+        //value.gameObject.SetActive(false);
       }
       else
       {
@@ -123,8 +124,20 @@ public class ShowerBooth : MonoBehaviour, IBathingFacility, ITemperatureControl,
   public void ReleaseCustomer()
   {
     SpawnBucketManager.SpawnObject(transform.position);
-    CurrentCustomer.facilityFlow.Dequeue();
-    CurrentCustomer = null;
+    
+    //CurrentCustomer.transform.eulerAngles = Vector3.Scale(CurrentCustomer.transform.eulerAngles, Vector3.down);
+    CurrentCustomer.transform.LookAt(enterPoint.transform.position);
+    CurrentCustomer.animator.SetBool($"In_{FacilityType}", false);
+    CurrentCustomer.animator.SetBool("Out", true);
+    CurrentCustomer.gameObject.transform.DOMove(enterPoint.transform.position, 1.5f).SetEase(Ease.InSine)
+        .OnComplete(() =>
+        {
+          CurrentCustomer.animator.SetBool("Out", false);
+          CurrentCustomer.GetNavMeshAgent().enabled = true;
+          CurrentCustomer.animator.SetTrigger("OutIdle");
+          CurrentCustomer.facilityFlow.Dequeue();
+          CurrentCustomer = null;
+        });
   }
   #endregion
   

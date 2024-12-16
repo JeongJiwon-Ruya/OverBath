@@ -12,7 +12,7 @@ public enum FacilityType {Bathtub, ShowerBooth, Massage, Sauna, PaymentArea, Hea
 public interface IBathingFacility
 {
   public FacilityEnterPoint enterPoint { get; set; }
-  public Vector3 position { get; set; }
+  public Vector3 usingPosition { get; set; }
   public FacilityType FacilityType { get; set; }
   public Customer CurrentCustomer { get; set; }
   public Coroutine CustomerProgressRoutine { get; set; }

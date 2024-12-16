@@ -19,7 +19,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
   private void Awake()
   {
     enterPoint = GetComponentInChildren<FacilityEnterPoint>();
-    position = transform.position;
+    usingPosition = transform.position;
     FacilityType = FacilityType.Massage;
   }
   
@@ -67,7 +67,7 @@ public class Massage : MonoBehaviour, IBathingFacility, IPlayerDocking
   #region IBathingFacility
 
   public FacilityEnterPoint enterPoint { get; set; }
-  public Vector3 position { get; set; }
+  public Vector3 usingPosition { get; set; }
   public FacilityType FacilityType { get; set; }
 
   private Customer currentCustomer;

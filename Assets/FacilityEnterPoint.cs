@@ -1,11 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 public class FacilityEnterPoint : MonoBehaviour
 {
+  [SerializeField] private float enterDuration = 1f;
+  [SerializeField] private Transform focusTransform;
   private IBathingFacility parentFacility;
   private ITemperatureControl parentTemperature;
 
@@ -21,20 +20,35 @@ public class FacilityEnterPoint : MonoBehaviour
     if (!customer.facilityFlow.TryPeek(out var fcb)) return;
     if (customer == parentFacility.CurrentCustomer) return;
     
-    if (fcb.facilityType == parentFacility.FacilityType && fcb.temperature == parentTemperature.Temperature)
+    if (fcb.facilityType == parentFacility.FacilityType)
     {
-      Debug.Log("Customer Enter in FEP");
-      //customer.GetNavMeshAgent().speed = 0f;
-      /*
-       * animation 처리 후 마지막에 facility의 CurrentCustomer에 할당
-       */
-      customer.GetNavMeshAgent().ResetPath();
-      customer.GetNavMeshAgent().enabled = false;
-      customer.animator.SetBool("Move", false);
-      customer.animator.SetBool("In", true);
-      customer.gameObject.transform.DOMove(parentFacility.position, 1.1f).SetEase(Ease.InSine)
-          .OnComplete(() => parentFacility.CurrentCustomer = customer);
-      
+      if (parentTemperature == null || fcb.temperature == parentTemperature.Temperature)
+      {
+        HandleCustomerEnter(parentFacility, customer);
+      }
     }
+  }
+  void HandleCustomerEnter(IBathingFacility parentFacility, Customer customer)
+  {
+    Debug.Log("Customer Enter in FEP");
+    //customer.GetNavMeshAgent().speed = 0f;
+    /*
+     * animation 처리 후 마지막에 facility의 CurrentCustomer에 할당
+     */
+    //customer.GetNavMeshAgent().ResetPath();
+    customer.GetNavMeshAgent().enabled = false;
+    customer.transform.LookAt(parentFacility.usingPosition);
+    customer.animator.SetBool($"Move", false);
+    customer.animator.SetBool($"In_{parentFacility.FacilityType}", true);
+    customer.gameObject.transform.DOMove(parentFacility.usingPosition, enterDuration).SetEase(Ease.InSine)
+        .OnComplete(() =>
+        {
+          customer.transform.DOLookAt(focusTransform.position, 0.2f).OnComplete(
+                () =>
+                {
+                  customer.animator.SetTrigger($"Use_{parentFacility.FacilityType}");
+                  parentFacility.CurrentCustomer = customer;
+                });
+        });
   }
 }

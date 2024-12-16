@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 
 public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
 {
+  [SerializeField] private Transform usingPositionTransform;
   [SerializeField] private BathItemType bathItemType;
   
   #region Unity Event
@@ -11,7 +13,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
   {
     enterPoint = GetComponentInChildren<FacilityEnterPoint>();
     FacilityType = FacilityType.Sauna;
-    position = transform.position;
+    usingPosition = usingPositionTransform.position;
     bathItemType = BathItemType.Ocher;
   }
   
@@ -55,7 +57,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
   #region IBathingFacility
 
   public FacilityEnterPoint enterPoint { get; set; }
-  public Vector3 position { get; set; }
+  public Vector3 usingPosition { get; set; }
   public FacilityType FacilityType { get; set; }
 
   private Customer currentCustomer;
@@ -66,7 +68,7 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
       if (value)
       {
         currentCustomer = value;
-        CurrentCustomer.gameObject.SetActive(false);
+        //CurrentCustomer.gameObject.SetActive(false);
         CustomerProgressRoutine = StartCoroutine(StartCustomerProgressRoutine());
       }
       else
@@ -109,12 +111,18 @@ public class Sauna : MonoBehaviour, IBathingFacility, IPlayerDocking
   public void ReleaseCustomer()
   {
     SpawnBucketManager.SpawnObject(transform.position);
-    CurrentCustomer.facilityFlow.Dequeue();
-    CurrentCustomer = null;
-    /*
-     * 플레이어가 인터랙션해야 호출됨.
-     * 이후에 손님이 나가는 플로우는 다른 시설과 동일. 
-     */
+    CurrentCustomer.transform.LookAt(enterPoint.transform.position);
+    CurrentCustomer.animator.SetBool($"In_{FacilityType}", false);
+    CurrentCustomer.animator.SetBool("Out", true);
+    CurrentCustomer.gameObject.transform.DOMove(enterPoint.transform.position, 1.5f).SetEase(Ease.InSine)
+        .OnComplete(() =>
+        {
+          CurrentCustomer.animator.SetBool("Out", false);
+          CurrentCustomer.GetNavMeshAgent().enabled = true;
+          CurrentCustomer.animator.SetTrigger("OutIdle");
+          CurrentCustomer.facilityFlow.Dequeue();
+          CurrentCustomer = null;
+        });
   }
   #endregion
 
